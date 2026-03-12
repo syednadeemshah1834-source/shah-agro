@@ -1,0 +1,266 @@
+/* ================= GLOBAL ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #f1f5f9;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ================= PAGE WRAPPER ================= */
+.purchase-page {
+  max-width: 1400px;
+  margin: auto;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  animation: fadePage 0.5s ease;
+}
+
+/* ================= HEADER ================= */
+.purchase-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.purchase-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* ================= ADD BUTTON ================= */
+.add-btn {
+  padding: 10px 22px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(99,102,241,0.4);
+  transition: all 0.3s ease;
+}
+
+.add-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(99,102,241,0.6);
+}
+
+/* ================= SUMMARY CARD ================= */
+.summary-card {
+  padding: 20px;
+  background: rgba(30,41,59,0.9);
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+/* ================= TABLE ================= */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(30,41,59,0.95);
+  border-radius: 12px;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.4);
+}
+
+thead {
+  background: linear-gradient(135deg, #34495e, #2c3e50);
+}
+
+thead th {
+  padding: 14px;
+  color: #ecf0f1;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+tbody td {
+  padding: 12px;
+  text-align: center;
+  color: #f1f5f9;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+/* Alternating row colors */
+tbody tr:nth-child(even) {
+  background: rgba(52,73,94,0.7);
+}
+
+tbody tr:nth-child(odd) {
+  background: rgba(44,62,80,0.7);
+}
+
+tbody tr:hover {
+  background: rgba(52,152,219,0.15);
+  transform: scale(1.01);
+  font-weight: 600;
+}
+
+/* Highlight total column */
+.highlight {
+  font-weight: 700;
+  color: #16a34a;
+}
+
+/* ================= ACTION BUTTONS ================= */
+.edit-btn {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  margin: 0 3px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.edit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37,99,235,0.5);
+}
+
+.delete-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  margin: 0 3px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(220,38,38,0.5);
+}
+
+/* ================= POPUP ================= */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.popup {
+  background: rgba(30,41,59,0.95);
+  padding: 30px;
+  border-radius: 18px;
+  width: 420px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  animation: slideUp 0.4s ease;
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.popup-header h2 {
+  color: #fff;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.close-btn {
+  cursor: pointer;
+  font-size: 22px;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #f87171;
+}
+
+.popup-body input {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(148,163,184,0.2);
+  background: rgba(15,23,42,0.9);
+  color: #f1f5f9;
+  font-size: 14px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.live-total {
+  margin: 10px 0;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+/* ================= PROFESSIONAL BUTTON ================= */
+.professional-btn {
+  width: 100%;
+  padding: 14px;
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(34,197,94,0.5);
+  transition: all 0.3s ease;
+}
+
+.professional-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(34,197,94,0.7);
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes fadePage {
+  from { opacity: 0; transform: translateY(20px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .popup {
+    width: 90%;
+  }
+  .row {
+    flex-direction: column;
+  }
+  table, thead, tbody, th, td {
+    font-size: 13px;
+  }
+}

@@ -1,0 +1,161 @@
+.alerts-container {
+
+  padding: 40px;
+  min-height: 100vh;
+
+  background:
+    linear-gradient(
+      135deg,
+      #0f172a,
+      #020617
+    );
+
+  color: white;
+
+}
+
+
+/* TITLE */
+
+.alerts-title {
+
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 30px;
+
+  background: linear-gradient(
+    90deg,
+    #38bdf8,
+    #6366f1
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+}
+
+
+/* GRID */
+
+.alerts-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(320px, 1fr));
+
+  gap: 30px;
+
+}
+
+
+/* CARD BASE */
+
+.alert-card {
+
+  padding: 25px;
+
+  border-radius: 16px;
+
+  backdrop-filter: blur(20px);
+
+  box-shadow:
+    0 0 30px rgba(0,0,0,0.5);
+
+  transition: 0.4s;
+
+}
+
+
+.alert-card:hover {
+
+  transform: translateY(-10px);
+
+  box-shadow:
+    0 0 50px rgba(255,255,255,0.2);
+
+}
+
+
+/* LOW STOCK */
+
+.alert-card.low {
+
+  background:
+    linear-gradient(
+      135deg,
+      #7f1d1d,
+      #dc2626
+    );
+
+}
+
+
+/* HIGH STOCK */
+
+.alert-card.high {
+
+  background:
+    linear-gradient(
+      135deg,
+      #064e3b,
+      #10b981
+    );
+
+}
+
+
+/* EXPIRY */
+
+.alert-card.expiry {
+
+  background:
+    linear-gradient(
+      135deg,
+      #78350f,
+      #f59e0b
+    );
+
+}
+
+
+/* CARD TITLE */
+
+.alert-card h2 {
+
+  font-size: 22px;
+  margin-bottom: 15px;
+
+}
+
+
+/* ITEM */
+
+.alert-item {
+
+  display: flex;
+  justify-content: space-between;
+
+  padding: 10px;
+
+  margin-bottom: 8px;
+
+  border-radius: 8px;
+
+  background:
+    rgba(255,255,255,0.1);
+
+}
+
+
+/* MOBILE */
+
+@media (max-width:768px){
+
+  .alerts-container {
+
+    padding: 20px;
+
+  }
+
+}

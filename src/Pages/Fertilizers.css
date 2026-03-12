@@ -1,0 +1,277 @@
+/* ================= GLOBAL ================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #f1f5f9;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ================= PAGE WRAPPER ================= */
+.fertilizer-page {
+  max-width: 1400px;
+  margin: auto;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  animation: fadePage 0.5s ease;
+}
+
+/* ================= HEADER ================= */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.page-header h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* ================= ADD BUTTON ================= */
+.add-btn {
+  padding: 10px 22px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #6366f1, #4663e5);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(99,102,241,0.4);
+  transition: all 0.3s ease;
+}
+
+.add-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(99,102,241,0.6);
+}
+
+/* ================= SEARCH INPUT ================= */
+.search-input {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  outline: none;
+  color: #111;
+  background: #f1f5f9;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: 2px solid #6366f1;
+  box-shadow: 0 5px 15px rgba(99,102,241,0.4);
+}
+
+/* ================= TABLE ================= */
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.fertilizer-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.4);
+  background: rgba(30,41,59,0.95);
+}
+
+.fertilizer-table thead {
+  background: linear-gradient(135deg, #34495e, #2c3e50);
+}
+
+.fertilizer-table thead th {
+  padding: 16px;
+  color: #ecf0f1;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.fertilizer-table tbody td {
+  padding: 14px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #f1f5f9;
+  transition: all 0.3s ease;
+}
+
+/* ================= ALTERNATING ROW COLORS ================= */
+.fertilizer-table tbody tr:nth-child(even) {
+  background: rgba(52, 73, 94, 0.7);
+}
+
+.fertilizer-table tbody tr:nth-child(odd) {
+  background: rgba(44, 62, 80, 0.7);
+}
+
+.fertilizer-table tbody tr:hover {
+  background: rgba(52,152,219,0.15);
+  transform: scale(1.01);
+  font-weight: 600;
+}
+
+/* ================= STOCK AND VALUE ================= */
+.stock {
+  font-weight: 600;
+  color: #facc15;
+}
+
+.value {
+  font-weight: 700;
+  color: #16a34a;
+}
+
+/* ================= ACTION BUTTONS ================= */
+.actions button {
+  margin: 0 4px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.edit-btn {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+}
+
+.edit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37,99,235,0.5);
+}
+
+.delete-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+}
+
+.delete-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(220,38,38,0.5);
+}
+
+/* ================= GRAND TOTAL ROW ================= */
+.grand-total-row td {
+  background: rgba(99,102,241,0.3);
+  font-weight: 700;
+  color: #fff;
+}
+
+/* ================= MODAL ================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,0.85);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal {
+  background: rgba(30,41,59,0.95);
+  padding: 30px;
+  border-radius: 18px;
+  width: 420px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  animation: slideUp 0.4s ease;
+}
+
+.modal h3 {
+  margin-bottom: 20px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.modal input {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(148,163,184,0.2);
+  background: rgba(15,23,42,0.9);
+  color: #f1f5f9;
+  font-size: 14px;
+}
+
+/* ================= MODAL BUTTONS ================= */
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.save-btn {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #fff;
+}
+
+.save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(34,197,94,0.5);
+}
+
+.cancel-btn {
+  background: linear-gradient(135deg, #64748b, #475569);
+  color: #fff;
+}
+
+.cancel-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(100,116,139,0.4);
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes fadePage {
+  from { opacity: 0; transform: translateY(20px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(40px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .fertilizer-table thead th,
+  .fertilizer-table tbody td {
+    font-size: 13px;
+  }
+}

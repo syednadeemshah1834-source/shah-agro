@@ -1,0 +1,116 @@
+.reports-container {
+
+  padding: 40px;
+  min-height: 100vh;
+
+  background:
+  linear-gradient(135deg,#0f172a,#020617);
+
+  color: white;
+
+}
+
+/* TITLE */
+
+.reports-title {
+
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 30px;
+
+}
+
+/* GRID */
+
+.reports-grid {
+
+  display: grid;
+
+  grid-template-columns:
+  repeat(auto-fit,minmax(280px,1fr));
+
+  gap: 25px;
+
+}
+
+/* CARD */
+
+.report-card {
+
+  padding: 30px;
+  border-radius: 14px;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+
+  box-shadow:
+  0 10px 30px rgba(0,0,0,0.5);
+
+}
+
+.report-card:hover {
+
+  transform: translateY(-6px) scale(1.02);
+
+}
+
+/* COLORS */
+
+.sales {
+
+  background:
+  linear-gradient(135deg,#3b82f6,#1d4ed8);
+
+}
+
+.purchase {
+
+  background:
+  linear-gradient(135deg,#f59e0b,#b45309);
+
+}
+
+.profit {
+
+  background:
+  linear-gradient(135deg,#10b981,#047857);
+
+}
+
+.inventory {
+
+  background:
+  linear-gradient(135deg,#6366f1,#4338ca);
+
+}
+
+.due {
+
+  background:
+  linear-gradient(135deg,#ef4444,#991b1b);
+
+}
+
+.expiry {
+
+  background:
+  linear-gradient(135deg,#f43f5e,#9f1239);
+
+}
+
+/* TEXT */
+
+.report-card h3 {
+
+  font-size: 18px;
+  margin-bottom: 10px;
+
+}
+
+.report-card p {
+
+  font-size: 26px;
+  font-weight: bold;
+
+}
