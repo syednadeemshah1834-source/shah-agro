@@ -3,6 +3,7 @@ import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
+import { HiOutlineLogout, HiOutlineUserCircle } from "react-icons/hi";
 import "./Topbar.css";
 
 const Topbar = () => {
@@ -10,24 +11,34 @@ const Topbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await signOut(auth);
-    localStorage.removeItem("user");
-    navigate("/login");
+    if (window.confirm("Are you sure you want to log out?")) {
+      await signOut(auth);
+      localStorage.removeItem("user");
+      navigate("/login");
+    }
   };
 
   return (
     <div className="topbar">
       <div className="topbar-left">
-        <h3>Shah Agro System</h3>
+        <h3>Enterprise Performance Management</h3>
       </div>
 
       <div className="topbar-right">
-        <div className="user-info">
-          <span className="user-email">{user?.email}</span>
+        <div className="user-profile">
+          <div className="user-avatar">
+            <HiOutlineUserCircle />
+          </div>
+          <div className="user-details">
+            <span className="user-display-name">Admin User</span>
+            <span className="user-email">{user?.email}</span>
+          </div>
         </div>
 
-        <button className="btn btn-danger logout-btn" onClick={handleLogout}>
-          Logout
+        <div className="topbar-divider"></div>
+
+        <button className="logout-icon-btn" onClick={handleLogout} title="Logout">
+          <HiOutlineLogout />
         </button>
       </div>
     </div>

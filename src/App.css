@@ -1,58 +1,37 @@
-/* =========================
-   APP STRUCTURE
-========================= */
-
 .app {
-  display: block;
+  display: flex;
   min-height: 100vh;
-  width: 100%;
+  background-color: var(--bg-primary);
 }
-
-
-/* MAIN CONTENT — PUSH RIGHT OF FIXED SIDEBAR */
 
 .main-content {
-
-  margin-left: 270px;   /* MUST match sidebar width */
-
-  padding: 30px;
-
+  flex: 1;
+  margin-left: var(--sidebar-width);
   min-height: 100vh;
-
-  background: #0f172a;
-
-  box-sizing: border-box;
-
-  width: calc(100% - 270px);
-
+  display: flex;
+  flex-direction: column;
+  transition: all var(--transition-medium);
 }
 
-
-/* =========================
-   RESPONSIVE FIX
-========================= */
-
-@media (max-width: 900px) {
-
-  .main-content {
-
-    margin-left: 220px;
-
-    width: calc(100% - 220px);
-
-  }
-
+.page-content {
+  padding: 24px 32px;
+  flex: 1;
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+  animation: fadeIn var(--transition-medium);
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
-@media (max-width: 600px) {
+@media (max-width: 1024px) {
+  .main-content { margin-left: 80px; }
+}
 
-  .main-content {
-
-    margin-left: 0;
-
-    width: 100%;
-
-  }
-
+@media (max-width: 768px) {
+  .main-content { margin-left: 0; }
+  .page-content { padding: 24px 20px; }
 }

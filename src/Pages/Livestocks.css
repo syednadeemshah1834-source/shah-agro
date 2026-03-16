@@ -1,228 +1,125 @@
-/* ================= GLOBAL DARK THEME ================= */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+.page-header {
+  margin-bottom: 32px;
 }
 
-body {
-  background: linear-gradient(145deg, #0f172a, #1e293b);
-  color: #f1f5f9;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
+.page-header h2 {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -1.5px;
 }
 
-/* ================= MAIN WRAPPER ================= */
-.finance-wrapper {
-  max-width: 1400px;
-  margin: auto;
-  padding: 40px 20px;
+/* ================= FINANCIAL CARDS ================= */
+
+.financial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.finance-card {
+  background: var(--bg-secondary);
+  padding: 28px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-medium);
   display: flex;
   flex-direction: column;
-  gap: 40px;
-  animation: fadePage 0.6s ease;
-}
-
-/* ================= PAGE HEADINGS ================= */
-.finance-wrapper h1 {
-  text-align: center;
-  font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 30px;
-  color: #fff;
-  letter-spacing: 1px;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
-}
-
-/* ================= CASH CARDS GRID ================= */
-.cash-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 25px;
-}
-
-/* ================= CASH CARD STYLING ================= */
-.card {
+  gap: 12px;
   position: relative;
-  border-radius: 20px;
-  padding: 25px 20px;
-  color: #fff;
-  text-align: center;
-  font-weight: 600;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
-  transition: all 0.4s ease;
   overflow: hidden;
 }
 
-.card h3 {
-  font-size: 20px;
-  margin-bottom: 15px;
+.finance-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.finance-card h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.card h2 {
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 0;
-  letter-spacing: 1px;
-  transition: all 0.3s ease;
+.finance-card .amount {
+  font-size: 28px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -1px;
 }
 
-/* ================= CARD COLORS ================= */
-.card.cash-in {
-  background: linear-gradient(135deg, #16a085, #1abc9c);
+.finance-card.sales .amount { color: #10b981; }
+.finance-card.purchases .amount { color: #f43f5e; }
+.finance-card.inventory .amount { color: var(--accent-secondary); }
+.finance-card.balance.profit .amount { color: #10b981; }
+.finance-card.balance.loss .amount { color: #f43f5e; }
+
+/* ================= TABLES ================= */
+
+.table-container {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 
-.card.cash-out {
-  background: linear-gradient(135deg, #e74c3c, #ff6b6b);
+.table-container h3 {
+  padding: 20px 24px;
+  font-size: 18px;
+  font-weight: 800;
+  border-bottom: 1px solid var(--border-color);
+  background: #f8fafc;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
 }
 
-.card.inventory-value {
-  background: linear-gradient(135deg, #2980b9, #3498db);
-}
-
-.card.profit {
-  background: linear-gradient(135deg, oklab(66.938% 0.11064 0.12566), hwb(14 18% 20%));
-}
-
-.card.loss {
-  background: linear-gradient(135deg, hsl(207, 88%, 41%), hwb(202 4% 8%));
-}
-
-/* ================= CARD HOVER ANIMATION ================= */
-.card::before {
-  content: "";
-  position: absolute;
-  width: 120%;
-  height: 120%;
-  top: -10%;
-  left: -10%;
-  background: rgba(255,255,255,0.05);
-  transform: rotate(25deg);
-  transition: all 0.5s ease;
-}
-
-.card:hover::before {
-  transform: rotate(0deg);
-  opacity: 0.1;
-}
-
-.card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
-}
-
-/* ================= STOCK TABLE ================= */
-.stock-table {
-  width: 100%;
-  background: rgba(30, 41, 59, 0.95);
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 15px 50px rgba(0,0,0,0.6);
-  overflow-x: auto;
-  color: #f1f5f9;
-}
-
-.stock-table h3 {
-  margin-bottom: 20px;
-  font-size: 24px;
-  color: #fff;
-  font-weight: 700;
-}
-
-/* ================= TABLE DESIGN ================= */
 table {
   width: 100%;
   border-collapse: collapse;
-  color: #f1f5f9;
 }
 
-thead {
-  background: linear-gradient(135deg, #34495e, #2c3e50);
-}
-
-thead th {
-  padding: 16px;
-  font-weight: 600;
-  text-align: center;
-  color: #ecf0f1;
-  letter-spacing: 0.5px;
+th {
+  background: #f8fafc;
+  padding: 16px 24px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--text-secondary);
+  border-bottom: 2px solid var(--border-color);
   text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
 }
 
-tbody td {
-  padding: 14px;
-  text-align: center;
+td {
+  padding: 18px 24px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 14px;
   font-weight: 500;
-  transition: all 0.3s ease;
 }
 
-tbody tr {
-  border-bottom: 1px solid rgba(255,255,255,0.15);
-  transition: all 0.3s ease;
+tr:hover td {
+  background-color: #f8fafc;
 }
 
-tbody tr:hover {
-  background: rgba(52, 152, 219, 0.1);
-  transform: scale(1.01);
-  font-weight: 600;
-  color: #fff;
+.item-name {
+  font-weight: 700;
 }
 
-/* ================= STOCK STATUS COLORS ================= */
-.profit td {
-  color: #2ecc71;
-  font-weight: 600;
+.stock-value {
+  font-weight: 800;
+  color: var(--accent-secondary);
 }
 
-.loss td {
-  color: #e74c3c;
-  font-weight: 600;
-}
-
-/* ================= COUNTUP ANIMATION ================= */
-.card h2 span {
-  display: inline-block;
-  transition: all 0.4s ease;
-}
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 1024px) {
-  .cash-cards {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  }
-
-  .card h2 {
-    font-size: 28px;
-  }
-
-  .stock-table h3 {
-    font-size: 20px;
-  }
-}
-
-@media (max-width: 768px) {
-  .cash-cards {
-    grid-template-columns: 1fr;
-  }
-
-  .finance-wrapper {
-    padding: 20px 10px;
-  }
-
-  .card h2 {
-    font-size: 24px;
-  }
-
-  table, tbody td, thead th {
-    font-size: 14px;
-  }
-}
-
-/* ================= PAGE FADE IN ================= */
-@keyframes fadePage {
-  from { opacity: 0; transform: translateY(20px);}
-  to { opacity: 1; transform: translateY(0);}
+.valuation-cell {
+  background: #f8fafc;
+  font-weight: 800;
+  color: var(--accent-primary);
 }

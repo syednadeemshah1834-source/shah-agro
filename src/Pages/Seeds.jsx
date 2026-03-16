@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./Seeds.css";
-
 import {
   collection,
   addDoc,
@@ -17,10 +16,10 @@ const shopId = "mainshop";
 
 const Seeds = () => {
   const [seedItems, setSeedItems] = useState([]);
+  const [sales, setSales] = useState([]);
+  const [purchases, setPurchases] = useState([]);
   const [filteredSeeds, setFilteredSeeds] = useState([]);
   const [editId, setEditId] = useState(null);
-  const [totalSeedValue, setTotalSeedValue] = useState(0);
-  const [animatedTotal, setAnimatedTotal] = useState(0);
   const [popupOpen, setPopupOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -33,113 +32,87 @@ const Seeds = () => {
     expiry: "",
   });
 
-  /* ================= REALTIME FETCH ================= */
   useEffect(() => {
     const ref = collection(db, "shops", shopId, "seeds");
-    const q = query(ref, orderBy("name", "asc"));
+    const salesRef = collection(db, "shops", shopId, "sales");
+    const purchasesRef = collection(db, "shops", shopId, "purchases");
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const seeds = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-
+    const unsubSeeds = onSnapshot(query(ref, orderBy("name", "asc")), (snapshot) => {
+      const seeds = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setSeedItems(seeds);
-      setFilteredSeeds(seeds);
-      calculateTotal(seeds);
     });
 
-    return () => unsubscribe();
+    const unsubSales = onSnapshot(salesRef, (snapshot) => {
+      setSales(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+
+    const unsubPurchases = onSnapshot(purchasesRef, (snapshot) => {
+      setPurchases(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+
+    return () => {
+      unsubSeeds();
+      unsubSales();
+      unsubPurchases();
+    };
   }, []);
 
-  /* ================= CALCULATE TOTAL ================= */
-  const calculateTotal = (seeds) => {
-    const total = seeds.reduce(
-      (acc, item) =>
-        acc + Number(item.quantity || 0) * Number(item.rate || 0),
-      0
-    );
-    setTotalSeedValue(total);
-  };
+  /* ================= LIVE STOCK ================= */
+  const liveStock = useMemo(() => {
+    const map = {};
+    seedItems.forEach((item) => {
+      map[item.name] = (map[item.name] || 0) + Number(item.quantity);
+    });
+    purchases.forEach((p) => {
+      map[p.itemName] = (map[p.itemName] || 0) + Number(p.quantity);
+    });
+    sales.forEach((s) => {
+      map[s.itemName] = (map[s.itemName] || 0) - Number(s.quantity);
+    });
+    return map;
+  }, [seedItems, sales, purchases]);
 
-  /* ================= ANIMATED COUNTER ================= */
-  useEffect(() => {
-    let start = 0;
-    const duration = 1000;
-    const step = totalSeedValue / (duration / 20);
+  const totalSeedValue = useMemo(() => {
+    return seedItems.reduce((acc, item) => {
+      const qty = liveStock[item.name] || 0;
+      return acc + qty * Number(item.rate || 0);
+    }, 0);
+  }, [seedItems, liveStock]);
 
-    const counter = setInterval(() => {
-      start += step;
-      if (start >= totalSeedValue) {
-        start = totalSeedValue;
-        clearInterval(counter);
-      }
-      setAnimatedTotal(Math.floor(start));
-    }, 20);
-
-    return () => clearInterval(counter);
-  }, [totalSeedValue]);
-
-  /* ================= ADD / UPDATE ================= */
   const handleAddOrUpdate = async () => {
-    if (
-      !formData.name ||
-      !formData.variety ||
-      !formData.quantity ||
-      !formData.rate ||
-      !formData.expiry
-    ) {
+    if (!formData.name || !formData.variety || !formData.quantity || !formData.rate || !formData.expiry) {
       alert("Please fill all required fields!");
       return;
     }
-
-    const payload = {
-      ...formData,
-      quantity: Number(formData.quantity),
-      rate: Number(formData.rate),
-    };
-
+    const payload = { ...formData, quantity: Number(formData.quantity), rate: Number(formData.rate) };
     if (editId) {
       await updateDoc(doc(db, "shops", shopId, "seeds", editId), payload);
       setEditId(null);
     } else {
       await addDoc(collection(db, "shops", shopId, "seeds"), payload);
     }
-
-    setFormData({
-      name: "",
-      variety: "",
-      quantity: "",
-      rate: "",
-      supplier: "",
-      expiry: "",
-    });
-
+    setFormData({ name: "", variety: "", quantity: "", rate: "", supplier: "", expiry: "" });
     setPopupOpen(false);
   };
 
-  /* ================= EDIT ================= */
   const handleEdit = (item) => {
     setFormData(item);
     setEditId(item.id);
     setPopupOpen(true);
   };
 
-  /* ================= DELETE ================= */
   const handleDelete = async (id) => {
     if (window.confirm("Delete this seed?")) {
       await deleteDoc(doc(db, "shops", shopId, "seeds", id));
     }
   };
 
-  /* ================= EXPIRY COLOR ================= */
   const getExpiryClass = (expiryDate) => {
     const today = new Date();
     const expiry = new Date(expiryDate);
     const diffDays = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
-
-    if (expiry < today) return "sa-expired";
-    if (diffDays <= 30) return "sa-near-expiry";
+    if (expiry < today) return "expiry-expired";
+    if (diffDays <= 30) return "expiry-near";
     return "";
   };
 
@@ -148,7 +121,6 @@ const Seeds = () => {
     return Math.min((quantity / max) * 100, 100);
   };
 
-  /* ================= SEARCH ================= */
   useEffect(() => {
     const filtered = seedItems.filter((item) =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -159,134 +131,59 @@ const Seeds = () => {
   }, [searchQuery, seedItems]);
 
   return (
-    <div className="sa-page-container">
-      <h1 className="sa-page-title">Seeds Inventory (Main Shop)</h1>
-
-      {/* ===== SEARCH CENTERED ===== */}
-      <div className="sa-search-container-center">
-        <input
-          type="text"
-          placeholder="Search seeds, variety or supplier..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="sa-search-input"
-        />
+    <div className="page-wrapper">
+      <div className="page-header">
+        <h2>Seeds Inventory Management</h2>
+        <button className="btn btn-primary" onClick={() => setPopupOpen(true)}>Add New Seed Stock</button>
       </div>
-
-      {/* ===== Animated Total Card ===== */}
-      <div className="sa-total-card">
-        Total Inventory Value
-        <span>PKR {animatedTotal.toLocaleString()}</span>
+      <div className="inventory-stats">
+        <div className="stat-card"><h3>Total Seeds Value</h3><div className="value">PKR {totalSeedValue?.toLocaleString()}</div></div>
+        <div className="stat-card"><h3>Unique Products</h3><div className="value">{seedItems?.length}</div></div>
       </div>
-
-      {/* ===== Add Fertilizer Button ===== */}
-      <button
-        className="sa-open-popup-btn"
-        onClick={() => setPopupOpen(true)}
-      >
-        Add Seeds
-      </button>
-
-      {/* ===== POPUP ===== */}
+      <div className="search-bar-container"><input type="text" className="search-input" placeholder="Filter seeds, variety or supplier..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} /></div>
+      <div className="table-container">
+        <table>
+          <thead>
+            <tr><th>Seed Product</th><th>Variety</th><th>Available Stock</th><th>Unit Rate</th><th>Total Value</th><th>Supplier</th><th>Expiry Date</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            {filteredSeeds.map((item) => {
+              const currentStock = liveStock[item.name] || 0;
+              const progress = getProgress(currentStock);
+              const isLow = currentStock < 50;
+              const expiryClass = getExpiryClass(item.expiry);
+              return (
+                <tr key={item.id}>
+                  <td style={{ fontWeight: 600 }}>{item.name} {isLow && <span className="low-stock-badge">Low</span>}</td>
+                  <td>{item.variety}</td>
+                  <td><div style={{ display: "flex", alignItems: "center", gap: "10px" }}><span style={{ minWidth: "30px" }}>{currentStock}</span><div className="progress-wrapper"><div className={`progress-fill ${isLow ? "low" : ""}`} style={{ width: `${progress}%` }} /></div></div></td>
+                  <td>PKR {Number(item.rate).toLocaleString()}</td>
+                  <td style={{ fontWeight: 500 }}>PKR {(currentStock * Number(item.rate)).toLocaleString()}</td>
+                  <td style={{ color: "var(--text-secondary)", fontSize: "13px" }}>{item.supplier}</td>
+                  <td className={expiryClass}>{item.expiry}</td>
+                  <td><div className="action-btns"><button className="edit-btn" onClick={() => handleEdit(item)}>Edit</button><button className="delete-btn" onClick={() => handleDelete(item.id)}>Delete</button></div></td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
       {popupOpen && (
-        <div className="sa-popup-overlay">
-          <div className="sa-popup">
-            <h2>{editId ? "Edit Seed" : "Add New Seed"}</h2>
-            <div className="sa-popup-form">
-              {["name", "variety", "quantity", "rate", "supplier"].map(
-                (field) => (
-                  <input
-                    key={field}
-                    type={
-                      field === "quantity" || field === "rate"
-                        ? "number"
-                        : "text"
-                    }
-                    placeholder={field}
-                    value={formData[field]}
-                    onChange={(e) =>
-                      setFormData({ ...formData, [field]: e.target.value })
-                    }
-                  />
-                )
-              )}
-
-              <input
-                type="date"
-                value={formData.expiry}
-                onChange={(e) =>
-                  setFormData({ ...formData, expiry: e.target.value })
-                }
-              />
-
-              <div className="sa-popup-actions">
-                <button onClick={handleAddOrUpdate}>
-                  {editId ? "Update Seed" : "Add Seed"}
-                </button>
-                <button onClick={() => setPopupOpen(false)}>Cancel</button>
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>{editId ? "Update Seed Details" : "Record New Seed Stock"}</h3>
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div className="form-group"><label>Seed Name</label><input className="form-input" placeholder="e.g. Hybrid Corn" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} /></div>
+              <div className="form-group"><label>Variety</label><input className="form-input" placeholder="e.g. XL-101" value={formData.variety} onChange={(e) => setFormData({ ...formData, variety: e.target.value })} /></div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <div className="form-group"><label>Quantity</label><input className="form-input" type="number" placeholder="0" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: e.target.value })} /></div>
+                <div className="form-group"><label>Unit Rate (PKR)</label><input className="form-input" type="number" placeholder="0" value={formData.rate} onChange={(e) => setFormData({ ...formData, rate: e.target.value })} /></div>
               </div>
-            </div>
+              <div className="form-group"><label>Supplier Source</label><input className="form-input" placeholder="Enter supplier name" value={formData.supplier} onChange={(e) => setFormData({ ...formData, supplier: e.target.value })} /></div>
+              <div className="form-group"><label>Expiry Date</label><input className="form-input" type="date" value={formData.expiry} onChange={(e) => setFormData({ ...formData, expiry: e.target.value })} /></div>
+              <div className="modal-footer"><button className="btn-save" onClick={handleAddOrUpdate}>{editId ? "Update Stock" : "Save Entry"}</button><button className="btn-cancel" onClick={() => setPopupOpen(false)}>Cancel</button></div>
+            </form>
           </div>
-        </div>
-      )}
-
-      {/* ===== TABLE ===== */}
-      {filteredSeeds.length > 0 && (
-        <div className="sa-seed-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Variety</th>
-                <th>Stock</th>
-                <th>Rate</th>
-                <th>Total</th>
-                <th>Supplier</th>
-                <th>Expiry</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {filteredSeeds.map((item) => {
-                const progress = getProgress(item.quantity);
-                const isLow = item.quantity < 50;
-
-                return (
-                  <tr key={item.id}>
-                    <td>
-                      {item.name} {isLow && <span className="sa-low-badge">Low</span>}
-                    </td>
-                    <td>{item.variety}</td>
-                    <td>
-                      {item.quantity}
-                      <div className="sa-progress-bar">
-                        <div
-                          className="sa-progress-fill"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-                    </td>
-                    <td>{Number(item.rate).toLocaleString()}</td>
-                    <td>
-                      {(Number(item.quantity) * Number(item.rate)).toLocaleString()}
-                    </td>
-                    <td>{item.supplier}</td>
-                    <td className={getExpiryClass(item.expiry)}>{item.expiry}</td>
-                    <td>
-                      <button onClick={() => handleEdit(item)}>Edit</button>
-                      <button onClick={() => handleDelete(item.id)}>Delete</button>
-                    </td>
-                  </tr>
-                );
-              })}
-
-              <tr className="sa-total-row">
-                <td colSpan="4">Total Inventory Value</td>
-                <td colSpan="4">PKR {animatedTotal.toLocaleString()}</td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       )}
     </div>

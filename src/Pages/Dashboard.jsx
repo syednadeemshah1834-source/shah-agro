@@ -12,7 +12,8 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
-  Legend
+  Legend,
+  ReferenceLine
 } from "recharts";
 
 import { useNavigate } from "react-router-dom";
@@ -20,6 +21,24 @@ import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 
 const shopId = "mainshop";
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="custom-chart-tooltip">
+        <p className="tooltip-label">{label}</p>
+        {payload.map((entry, index) => (
+          <div key={index} className="tooltip-entry">
+            <span className="tooltip-dot" style={{ backgroundColor: entry.color || entry.fill }}></span>
+            <span className="tooltip-name">{entry.name}:</span>
+            <span className="tooltip-value">PKR {Number(entry.value).toLocaleString()}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
 
 const Dashboard = () => {
 
@@ -74,7 +93,7 @@ const Dashboard = () => {
 
   /* ================= MONTHLY DATA ================= */
 
-  const chartData = useMemo(() => {
+  const { chartData, avgSales, avgProfit } = useMemo(() => {
 
     const months = Array.from({ length: 12 }, (_, i) => ({
       month: new Date(0, i).toLocaleString("default", { month: "short" }),
@@ -95,11 +114,20 @@ const Dashboard = () => {
       months[m].purchases += Number(p.total || 0);
     });
 
+    let totalS = 0;
+    let totalP = 0;
+
     months.forEach(m => {
-      m.profit = m.sales;
+      m.profit = m.sales - m.purchases;
+      totalS += m.sales;
+      totalP += m.profit;
     });
 
-    return months;
+    return { 
+      chartData: months, 
+      avgSales: totalS / 12, 
+      avgProfit: totalP / 12 
+    };
 
   }, [sales, purchases]);
 
@@ -276,65 +304,119 @@ const Dashboard = () => {
       <div className="dashboard-charts">
 
         <div className="chart-card">
+          <div className="chart-card-header">
+            <h3>Monthly Sales Trend</h3>
+            <p>Revenue performance over time with average baseline</p>
+          </div>
 
-          <h3>Monthly Sales Trend</h3>
-
-          <ResponsiveContainer width="100%" height={300}>
-
-            <AreaChart data={chartData}>
-
-              <XAxis dataKey="month" />
-
-              <YAxis />
-
-              <Tooltip />
-
+          <ResponsiveContainer width="100%" height={320}>
+            <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--accent-secondary)" stopOpacity={0.4}/>
+                  <stop offset="95%" stopColor="var(--accent-secondary)" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(226, 232, 240, 0.4)" />
+              <XAxis 
+                dataKey="month" 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: "var(--text-secondary)", fontSize: 11, fontWeight: 700 }}
+                dy={12}
+              />
+              <YAxis 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: "var(--text-secondary)", fontSize: 11, fontWeight: 700 }}
+                tickFormatter={(value) => value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value}
+              />
+              <Tooltip 
+                content={<CustomTooltip />}
+                cursor={{ stroke: 'var(--accent-secondary)', strokeWidth: 1.5, strokeDasharray: '4 4' }}
+              />
+              <ReferenceLine 
+                y={avgSales} 
+                label={{ position: 'right', value: 'Avg', fill: 'var(--text-secondary)', fontSize: 10, fontWeight: 800 }} 
+                stroke="var(--text-secondary)" 
+                strokeDasharray="3 3" 
+                strokeOpacity={0.5}
+              />
               <Area
                 type="monotone"
                 dataKey="sales"
-                stroke="#6366f1"
-                fill="#6366f1"
+                stroke="var(--accent-secondary)"
+                strokeWidth={4}
+                fillOpacity={1}
+                fill="url(#colorSales)"
+                animationDuration={2000}
+                activeDot={{ r: 6, strokeWidth: 2, stroke: "#fff", fill: "var(--accent-secondary)" }}
               />
-
             </AreaChart>
-
           </ResponsiveContainer>
-
         </div>
 
         <div className="chart-card">
+          <div className="chart-card-header">
+            <h3>Profit & Sales Correlation</h3>
+            <p>Earnings vs acquisition volume</p>
+          </div>
 
-          <h3>Monthly Profit Overview</h3>
-
-          <ResponsiveContainer width="100%" height={300}>
-
-            <BarChart data={chartData}>
-
-              <CartesianGrid strokeDasharray="3 3" />
-
-              <XAxis dataKey="month" />
-
-              <YAxis />
-
-              <Tooltip />
-
-              <Legend />
-
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--accent-primary)" stopOpacity={1}/>
+                  <stop offset="100%" stopColor="var(--accent-primary)" stopOpacity={0.6}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(226, 232, 240, 0.4)" />
+              <XAxis 
+                dataKey="month" 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: "var(--text-secondary)", fontSize: 11, fontWeight: 700 }}
+                dy={12}
+              />
+              <YAxis 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: "var(--text-secondary)", fontSize: 11, fontWeight: 700 }}
+                tickFormatter={(value) => value >= 1000 ? `${(value / 1000).toFixed(0)}k` : value}
+              />
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(226, 232, 240, 0.2)' }} />
+              <ReferenceLine 
+                y={avgProfit} 
+                stroke="#10b981" 
+                strokeDasharray="3 3" 
+                strokeOpacity={0.5}
+                label={{ position: 'right', value: 'Goal', fill: '#10b981', fontSize: 10, fontWeight: 800 }}
+              />
               <Bar
                 dataKey="profit"
-                fill="#10b981"
-                radius={[6,6,0,0]}
+                name="Net Profit"
+                fill="url(#colorProfit)"
+                radius={[4, 4, 0, 0]}
+                barSize={24}
+                animationDuration={2000}
               />
-
+              <Bar
+                dataKey="purchases"
+                name="Expenses"
+                fill="#f43f5e"
+                radius={[4, 4, 0, 0]}
+                barSize={12}
+                animationDuration={2000}
+                opacity={0.4}
+              />
             </BarChart>
-
           </ResponsiveContainer>
-
         </div>
 
       </div>
 
     </div>
+
 
   );
 

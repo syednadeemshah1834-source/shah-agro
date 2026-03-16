@@ -1,124 +1,69 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { 
+  MdDashboard, 
+  MdInventory, 
+  MdOutlineSell, 
+  MdOutlineShoppingBag, 
+  MdOutlineNotificationsActive, 
+  MdOutlineSettings 
+} from "react-icons/md";
+import { 
+  GiFarmer, 
+  GiChemicalDrop, 
+  GiCow 
+} from "react-icons/gi";
+import { 
+  HiOutlineReceiptTax, 
+  HiOutlineDocumentReport 
+} from "react-icons/hi";
+import { PiPlant } from "react-icons/pi";
+import { LiaShippingFastSolid } from "react-icons/lia";
+import { TbReportMoney } from "react-icons/tb";
 import "./Sidebar.css";
 import Icon from "../Images/seed10.jpg";
 
 const Sidebar = () => {
   const location = useLocation();
 
+  const navItems = [
+    { path: "/dashboard", label: "Dashboard", icon: <MdDashboard /> },
+    { path: "/farms", label: "Farms", icon: <GiFarmer /> },
+    { path: "/seeds", label: "Seeds", icon: <PiPlant /> },
+    { path: "/fertilizers", label: "Fertilizers", icon: <GiChemicalDrop /> },
+    { path: "/duebills", label: "Due Bills", icon: <HiOutlineReceiptTax /> },
+    { path: "/inventory", label: "Inventory", icon: <MdInventory /> },
+    { path: "/sales", label: "Sales", icon: <MdOutlineSell /> },
+    { path: "/purchase", label: "Purchase", icon: <MdOutlineShoppingBag /> },
+    { path: "/suppliers", label: "Suppliers", icon: <LiaShippingFastSolid /> },
+    { path: "/livestocks", label: "Live Stock", icon: <GiCow /> },
+    { path: "/smartalerts", label: "Smart Alerts", icon: <MdOutlineNotificationsActive /> },
+    { path: "/profit-loss", label: "Profit & Loss", icon: <TbReportMoney /> },
+    { path: "/reports", label: "Reports", icon: <HiOutlineDocumentReport /> },
+    { path: "/settings", label: "Settings", icon: <MdOutlineSettings /> },
+  ];
+
   return (
     <div className="sidebar">
-
-      {/* HEADER */}
       <div className="sidebar-header">
-        <img src={Icon} alt="Logo" className="sidebar-logo" />
-        <h2 className="sidebar-title">Shah Agro Khwaza Khela</h2>
+        <div className="logo-container">
+          <img src={Icon} alt="Logo" className="sidebar-logo" />
+        </div>
+        <h1 className="sidebar-title">Shah Agro</h1>
       </div>
 
-      {/* NAVIGATION */}
       <nav className="sidebar-nav">
-
-        <Link
-          to="/dashboard"
-          className={location.pathname === "/dashboard" || location.pathname === "/" ? "active" : ""}
-        >
-          Dashboard
-        </Link>
-
-        <Link
-          to="/farms"
-          className={location.pathname === "/farms" ? "active" : ""}
-        >
-          Farms
-        </Link>
-
-        <Link
-          to="/seeds"
-          className={location.pathname === "/seeds" ? "active" : ""}
-        >
-          Seeds
-        </Link>
-
-        <Link
-          to="/fertilizers"
-          className={location.pathname === "/fertilizers" ? "active" : ""}
-        >
-          Fertilizers
-        </Link>
-
-        <Link
-          to="/duebills"
-          className={location.pathname === "/duebills" ? "active" : ""}
-        >
-          Due Bills
-        </Link>
-
-        <Link
-          to="/inventory"
-          className={location.pathname === "/inventory" ? "active" : ""}
-        >
-          Inventory
-        </Link>
-
-        <Link
-          to="/sales"
-          className={location.pathname === "/sales" ? "active" : ""}
-        >
-          Sales
-        </Link>
-
-        <Link
-          to="/purchase"
-          className={location.pathname === "/purchase" ? "active" : ""}
-        >
-          Purchase
-        </Link>
-
-        <Link
-          to="/suppliers"
-          className={location.pathname === "/suppliers" ? "active" : ""}
-        >
-          Suppliers
-        </Link>
-
-        <Link
-          to="/livestocks"
-          className={location.pathname === "/livestocks" ? "active" : ""}
-        >
-          Live Stock
-        </Link>
-
-        {/* ✅ FIXED SMART ALERTS LINK */}
-        <Link
-          to="/smartalerts"
-          className={location.pathname === "/smartalerts" ? "active" : ""}
-        >
-          Smart Alerts
-        </Link>
-
-        <Link
-          to="/profit-loss"
-          className={location.pathname === "/profit-loss" ? "active" : ""}
-        >
-          Profit & Loss
-        </Link>
-
-        <Link
-          to="/reports"
-          className={location.pathname === "/reports" ? "active" : ""}
-        >
-          Reports
-        </Link>
-
-        <Link
-          to="/settings"
-          className={location.pathname === "/settings" ? "active" : ""}
-        >
-          Settings
-        </Link>
-
+        {navItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={location.pathname === item.path || (item.path === "/dashboard" && location.pathname === "/") ? "active" : ""}
+          >
+            <span className="nav-icon">{item.icon}</span>
+            <span className="nav-label">{item.label}</span>
+          </Link>
+        ))}
       </nav>
-
     </div>
   );
 };

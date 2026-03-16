@@ -129,19 +129,17 @@ const DueBills = () => {
   };
 
   return (
-    <div className="due-wrapper">
-
-      {/* HEADER */}
-      <div className="header-bar">
+    <div className="page-wrapper">
+      <div className="page-header">
         <h2>Due Bills Management</h2>
-        <button className="add-btn" onClick={() => setModalOpen(true)}>
-          + Add Due Bill
+        <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
+          Add Due Bill
         </button>
       </div>
 
-      {/* SEARCH */}
-      <div className="search-box">
+      <div className="search-container">
         <input
+          className="search-input"
           placeholder="Search by customer name or cell number..."
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
@@ -151,49 +149,103 @@ const DueBills = () => {
         </button>
       </div>
 
-      {/* TOTAL OUTSTANDING */}
-      <h3 className="outstanding">
-        Total Outstanding: Rs {formatCurrency(totalOutstanding)}
-      </h3>
+      <div className="outstanding-summary">
+        <h3>Total Outstanding Receivables</h3>
+        <h2>PKR {formatCurrency(totalOutstanding)}</h2>
+      </div>
 
-      {/* MODAL */}
+      <div className="table-container">
+        {loading ? (
+          <div style={{ padding: "40px", textAlign: "center", color: "var(--text-secondary)" }}>Loading receivables data...</div>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Cell No</th>
+                <th>Total Bill</th>
+                <th>Paid</th>
+                <th>Remaining</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredBills.map((bill) => (
+                <tr key={bill.id}>
+                  <td style={{ fontWeight: 600 }}>{bill.customerName}</td>
+                  <td>{bill.phone}</td>
+                  <td style={{ fontWeight: 500 }}>PKR {formatCurrency(bill.totalAmount)}</td>
+                  <td style={{ color: "var(--accent-primary)" }}>PKR {formatCurrency(bill.paidAmount)}</td>
+                  <td style={{ color: "#ef4444", fontWeight: 700 }}>PKR {formatCurrency(bill.remainingAmount)}</td>
+                  <td>
+                    <span className={`status-badge status-${bill.status}`}>
+                      {bill.status}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="action-btns">
+                      <button className="edit-btn" onClick={() => handleEdit(bill)}>Edit</button>
+                      <button className="delete-btn" onClick={() => handleDelete(bill.id)}>Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
       {modalOpen && (
-        <div className="modal-overlay" onClick={resetForm}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h3>{editId ? "Edit Due Bill" : "Add Due Bill"}</h3>
-
-            {["customerName", "phone", "items"].map((field) => (
-              <input
-                key={field}
-                placeholder={field.replace(/([A-Z])/g, " $1")}
-                value={formData[field]}
-                onChange={(e) =>
-                  setFormData({ ...formData, [field]: e.target.value })
-                }
-              />
-            ))}
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>{editId ? "Update Bill Details" : "New Due Bill Entry"}</h3>
 
             <input
-              type="number"
-              placeholder="Total Amount"
-              value={formData.totalAmount}
-              onChange={(e) =>
-                setFormData({ ...formData, totalAmount: e.target.value })
-              }
+              className="form-input"
+              placeholder="Customer Full Name"
+              value={formData.customerName}
+              onChange={(e) => setFormData({ ...formData, customerName: e.target.value })}
+            />
+            <input
+              className="form-input"
+              placeholder="Phone Number / Cell"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            />
+            <input
+              className="form-input"
+              placeholder="Items / Description"
+              value={formData.items}
+              onChange={(e) => setFormData({ ...formData, items: e.target.value })}
             />
 
-            <input
-              type="number"
-              placeholder="Paid Amount"
-              value={formData.paidAmount}
-              onChange={(e) =>
-                setFormData({ ...formData, paidAmount: e.target.value })
-              }
-            />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="form-group">
+                <label style={{ fontSize: "12px", color: "var(--text-secondary)", marginBottom: "4px", display: "block" }}>Total Bill Amount</label>
+                <input
+                  className="form-input"
+                  type="number"
+                  placeholder="0.00"
+                  value={formData.totalAmount}
+                  onChange={(e) => setFormData({ ...formData, totalAmount: e.target.value })}
+                />
+              </div>
+              <div className="form-group">
+                <label style={{ fontSize: "12px", color: "var(--text-secondary)", marginBottom: "4px", display: "block" }}>Paid Currently</label>
+                <input
+                  className="form-input"
+                  type="number"
+                  placeholder="0.00"
+                  value={formData.paidAmount}
+                  onChange={(e) => setFormData({ ...formData, paidAmount: e.target.value })}
+                />
+              </div>
+            </div>
 
             <div className="modal-buttons">
-              <button onClick={handleAddOrUpdate}>
-                {editId ? "Update" : "Add"}
+              <button className="save-btn" onClick={handleAddOrUpdate}>
+                {editId ? "Update Bill" : "Save Record"}
               </button>
               <button className="cancel-btn" onClick={resetForm}>
                 Cancel
@@ -201,43 +253,6 @@ const DueBills = () => {
             </div>
           </div>
         </div>
-      )}
-
-      {/* TABLE */}
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <table className="due-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Cell</th>
-              <th>Total</th>
-              <th>Paid</th>
-              <th>Remaining</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredBills.map((bill) => (
-              <tr key={bill.id}>
-                <td>{bill.customerName}</td>
-                <td>{bill.phone}</td>
-                <td>Rs {formatCurrency(bill.totalAmount)}</td>
-                <td>Rs {formatCurrency(bill.paidAmount)}</td>
-                <td>Rs {formatCurrency(bill.remainingAmount)}</td>
-                <td className={`status ${bill.status}`}>
-                  {bill.status}
-                </td>
-                <td className="actions">
-                  <button onClick={() => handleEdit(bill)}>Edit</button>
-                  <button onClick={() => handleDelete(bill.id)}>Delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       )}
     </div>
   );

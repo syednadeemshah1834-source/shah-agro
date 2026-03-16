@@ -18,6 +18,7 @@ const Purchase = () => {
   const shopId = user?.shopId || "mainshop";
 
   const [purchases, setPurchases] = useState([]);
+  const [products, setProducts] = useState([]);
   const [popupOpen, setPopupOpen] = useState(false);
   const [editId, setEditId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -46,8 +47,29 @@ const Purchase = () => {
       }
     );
 
-    return () => unsub();
-  }, [purchasesRef]);
+    // Fetch Master Products
+    const unsubInv = onSnapshot(collection(db, "shops", shopId, "inventory"), (snap) => {
+      const invItems = snap.docs.map(d => ({ id: d.id, name: d.data().name, source: "inventory" }));
+      setProducts(prev => [...prev.filter(p => p.source !== "inventory"), ...invItems]);
+    });
+
+    const unsubSeeds = onSnapshot(collection(db, "shops", shopId, "seeds"), (snap) => {
+      const seedItems = snap.docs.map(d => ({ id: d.id, name: d.data().name, source: "seeds" }));
+      setProducts(prev => [...prev.filter(p => p.source !== "seeds"), ...seedItems]);
+    });
+
+    const unsubFerts = onSnapshot(collection(db, "shops", shopId, "fertilizers"), (snap) => {
+      const fertItems = snap.docs.map(d => ({ id: d.id, name: d.data().name, source: "fertilizers" }));
+      setProducts(prev => [...prev.filter(p => p.source !== "fertilizers"), ...fertItems]);
+    });
+
+    return () => {
+      unsub();
+      unsubInv();
+      unsubSeeds();
+      unsubFerts();
+    };
+  }, [purchasesRef, shopId]);
 
   // Listen to online/offline status
   useEffect(() => {
@@ -138,53 +160,47 @@ const Purchase = () => {
   const liveTotal = Number(formData.quantity || 0) * Number(formData.price || 0);
 
   return (
-    <div className="purchase-page">
-      {/* Header */}
-      <div className="purchase-header">
+    <div className="page-wrapper">
+      <div className="page-header">
         <h1>Purchase Management</h1>
         <button
-          className="add-btn"
+          className="btn btn-primary"
           onClick={() => {
             setPopupOpen(true);
             setEditId(null);
           }}
         >
-          + Add Purchase
+          New Purchase
         </button>
       </div>
 
-      {/* Offline status */}
       {isOffline && (
-        <p style={{ color: "red", fontWeight: "bold" }}>
+        <div style={{ background: "#fef2f2", color: "#dc2626", padding: "12px 16px", borderRadius: "12px", fontSize: "14px", fontWeight: 600, marginBottom: "24px", border: "1px solid #fee2e2" }}>
           ⚠️ You are offline — showing cached data
-        </p>
+        </div>
       )}
 
-      {/* Search */}
-      <div className="search-wrapper">
+      <div className="search-container">
         <input
           type="text"
           className="search-input"
-          placeholder="Search by Supplier, Item, or Cell..."
+          placeholder="Search by supplier, item, or cell..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <button className="search-btn">🔍 Search</button>
       </div>
 
-      {/* Summary */}
       <div className="summary-card">
-        Total Purchase Value
+        Total Purchase Investment
         <span>PKR {overallTotal.toLocaleString()}</span>
       </div>
 
-      {/* Table */}
-      <div className="table-wrapper">
+      <div className="table-container">
         <table>
           <thead>
             <tr>
               <th>Supplier</th>
-              <th>Cell</th>
+              <th>Cell No</th>
               <th>Item</th>
               <th>Qty</th>
               <th>Price</th>
@@ -195,19 +211,17 @@ const Purchase = () => {
           <tbody>
             {filteredPurchases.map((p) => (
               <tr key={p.id}>
-                <td>{p.supplierName}</td>
+                <td style={{ fontWeight: 500 }}>{p.supplierName}</td>
                 <td>{p.cellNo}</td>
                 <td>{p.itemName}</td>
                 <td>{p.quantity}</td>
-                <td>PKR {p.price}</td>
+                <td>PKR {p.price?.toLocaleString()}</td>
                 <td className="highlight">PKR {p.total.toLocaleString()}</td>
                 <td>
-                  <button className="edit-btn" onClick={() => handleEdit(p)}>
-                    Edit
-                  </button>
-                  <button className="delete-btn" onClick={() => handleDelete(p.id)}>
-                    Delete
-                  </button>
+                  <div className="action-btns">
+                    <button className="edit-btn" onClick={() => handleEdit(p)}>Edit</button>
+                    <button className="delete-btn" onClick={() => handleDelete(p.id)}>Delete</button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -215,63 +229,68 @@ const Purchase = () => {
         </table>
       </div>
 
-      {/* Popup */}
       {popupOpen && (
         <div className="popup-overlay">
           <div className="popup">
             <div className="popup-header">
-              <h2>{editId ? "Edit Purchase" : "Add Purchase"}</h2>
-              <span className="close-btn" onClick={() => setPopupOpen(false)}>
-                ✕
-              </span>
+              <h2>{editId ? "Update Purchase" : "Log New Purchase"}</h2>
+              <span className="close-btn" onClick={() => setPopupOpen(false)}>✕</span>
             </div>
 
             <div className="popup-body">
               <input
+                className="form-input"
                 placeholder="Supplier Name"
                 value={formData.supplierName}
-                onChange={(e) =>
-                  setFormData({ ...formData, supplierName: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, supplierName: e.target.value })}
               />
               <input
+                className="form-input"
                 placeholder="Supplier Cell No"
                 value={formData.cellNo}
-                onChange={(e) =>
-                  setFormData({ ...formData, cellNo: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, cellNo: e.target.value })}
               />
-              <input
-                placeholder="Item Name"
+              <select
+                className="form-input"
                 value={formData.itemName}
-                onChange={(e) =>
-                  setFormData({ ...formData, itemName: e.target.value })
-                }
-              />
+                onChange={(e) => setFormData({ ...formData, itemName: e.target.value })}
+              >
+                <option value="">-- Select Product --</option>
+                {[...new Set(products.map(p => p.name))].sort().map(name => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+              </select>
+              
               <div className="row">
                 <input
+                  className="form-input"
                   type="number"
                   placeholder="Quantity"
                   value={formData.quantity}
-                  onChange={(e) =>
-                    setFormData({ ...formData, quantity: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
                 />
                 <input
+                  className="form-input"
                   type="number"
                   placeholder="Price"
                   value={formData.price}
-                  onChange={(e) =>
-                    setFormData({ ...formData, price: e.target.value })
-                  }
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 />
               </div>
-              <div className="live-total">
-                Live Total: PKR {liveTotal.toLocaleString()}
+
+              <div className="live-total-box">
+                <p>Calculated Total:</p>
+                <h4>PKR {liveTotal.toLocaleString()}</h4>
               </div>
-              <button className="professional-btn" onClick={handleSave}>
-                {editId ? "Update Purchase" : "Save Purchase"}
-              </button>
+
+              <div className="modal-footer" style={{ marginTop: 0 }}>
+                <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave}>
+                  {editId ? "Update Purchase" : "Save Purchase"}
+                </button>
+                <button className="btn btn-secondary" onClick={() => setPopupOpen(false)}>
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>

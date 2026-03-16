@@ -1,116 +1,85 @@
-.reports-container {
-
-  padding: 40px;
-  min-height: 100vh;
-
-  background:
-  linear-gradient(135deg,#0f172a,#020617);
-
-  color: white;
-
+.page-header {
+  margin-bottom: 32px;
 }
 
-/* TITLE */
-
-.reports-title {
-
+.page-header h2 {
   font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 30px;
-
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -1.5px;
 }
 
-/* GRID */
+/* ================= REPORTS GRID ================= */
 
 .reports-grid {
-
   display: grid;
-
-  grid-template-columns:
-  repeat(auto-fit,minmax(280px,1fr));
-
-  gap: 25px;
-
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
 }
 
-/* CARD */
-
 .report-card {
-
-  padding: 30px;
-  border-radius: 14px;
-
+  background: var(--bg-secondary);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
+  transition: all var(--transition-medium);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
 
-  transition: 0.3s;
-
-  box-shadow:
-  0 10px 30px rgba(0,0,0,0.5);
-
+.report-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 0;
+  background: var(--accent-secondary);
+  transition: all var(--transition-medium);
 }
 
 .report-card:hover {
-
-  transform: translateY(-6px) scale(1.02);
-
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent-secondary);
 }
 
-/* COLORS */
-
-.sales {
-
-  background:
-  linear-gradient(135deg,#3b82f6,#1d4ed8);
-
+.report-card:hover::before {
+  height: 100%;
 }
-
-.purchase {
-
-  background:
-  linear-gradient(135deg,#f59e0b,#b45309);
-
-}
-
-.profit {
-
-  background:
-  linear-gradient(135deg,#10b981,#047857);
-
-}
-
-.inventory {
-
-  background:
-  linear-gradient(135deg,#6366f1,#4338ca);
-
-}
-
-.due {
-
-  background:
-  linear-gradient(135deg,#ef4444,#991b1b);
-
-}
-
-.expiry {
-
-  background:
-  linear-gradient(135deg,#f43f5e,#9f1239);
-
-}
-
-/* TEXT */
 
 .report-card h3 {
-
-  font-size: 18px;
-  margin-bottom: 10px;
-
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
-.report-card p {
-
-  font-size: 26px;
-  font-weight: bold;
-
+.report-card .report-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -1px;
 }
+
+/* ================= SPECIAL COLORING ================= */
+
+.report-card.sales .report-value { color: #10b981; }
+.report-card.purchase .report-value { color: #f59e0b; }
+.report-card.profit .report-value { color: var(--accent-secondary); }
+.report-card.inventory .report-value { color: #8b5cf6; }
+.report-card.due .report-value { color: #ef4444; }
+.report-card.expiry .report-value { color: #f43f5e; }
+
+.report-card.sales::before { background: #10b981; }
+.report-card.purchase::before { background: #f59e0b; }
+.report-card.profit::before { background: var(--accent-secondary); }
+.report-card.inventory::before { background: #8b5cf6; }
+.report-card.due::before { background: #ef4444; }
+.report-card.expiry::before { background: #f43f5e; }

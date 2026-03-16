@@ -110,54 +110,45 @@ const Suppliers = () => {
   };
 
   return (
-    <div className="supplier-container">
-      <div className="top-bar">
+    <div className="page-wrapper">
+      <div className="page-header">
         <h2>Supplier Management</h2>
-        <button className="add-btn" onClick={() => openPopup()}>
-          + Add Supplier
+        <button className="btn btn-primary" onClick={() => openPopup()}>
+          Add New Supplier
         </button>
       </div>
 
-      {/* TABLE */}
-      <div className="table-wrapper">
-        <table className="supplier-table">
+      <div className="table-container">
+        <table>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Contact</th>
-              <th>Item</th>
+              <th>Supplier Name</th>
+              <th>Contact No</th>
+              <th>Product/Item</th>
               <th>Qty</th>
-              <th>Total</th>
+              <th>Total Amount</th>
               <th>Paid</th>
-              <th>Remaining</th>
+              <th>Balance</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {suppliers.map((sup) => (
               <tr key={sup.id}>
-                <td>{sup.supplierName}</td>
+                <td style={{ fontWeight: 600 }}>{sup.supplierName}</td>
                 <td>{sup.contact}</td>
                 <td>{sup.itemName}</td>
                 <td>{sup.quantity}</td>
-                <td>Rs {sup.totalPrice}</td>
-                <td>Rs {sup.paidAmount}</td>
+                <td style={{ fontWeight: 500 }}>PKR {sup.totalPrice?.toLocaleString()}</td>
+                <td style={{ color: "var(--accent-primary)", fontWeight: 600 }}>PKR {sup.paidAmount?.toLocaleString()}</td>
                 <td className={sup.remainingBalance > 0 ? "red" : "green"}>
-                  Rs {sup.remainingBalance}
+                  PKR {sup.remainingBalance?.toLocaleString()}
                 </td>
                 <td>
-                  <button
-                    className="edit-btn"
-                    onClick={() => openPopup(sup)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="delete-btn"
-                    onClick={() => handleDelete(sup.id)}
-                  >
-                    Delete
-                  </button>
+                  <div className="action-btns">
+                    <button className="edit-btn" onClick={() => openPopup(sup)}>Edit</button>
+                    <button className="delete-btn" onClick={() => handleDelete(sup.id)}>Delete</button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -165,81 +156,77 @@ const Suppliers = () => {
         </table>
       </div>
 
-      {/* POPUP MODAL */}
       {showPopup && (
         <div className="modal-overlay">
           <div className="modal">
-            <h3>{editId ? "Update Supplier" : "Add Supplier"}</h3>
+            <h3>{editId ? "Update Supplier Record" : "New Supplier Entry"}</h3>
 
             <form onSubmit={handleSubmit}>
               <input
+                className="form-input"
                 type="text"
-                placeholder="Supplier Name"
+                placeholder="Supplier or Company Name"
                 value={form.supplierName}
-                onChange={(e) =>
-                  setForm({ ...form, supplierName: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, supplierName: e.target.value })}
               />
 
               <input
+                className="form-input"
                 type="text"
-                placeholder="Contact"
+                placeholder="Contact Phone Number"
                 value={form.contact}
-                onChange={(e) =>
-                  setForm({ ...form, contact: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, contact: e.target.value })}
               />
 
               <input
+                className="form-input"
                 type="text"
-                placeholder="Item Name"
+                placeholder="Item/Product Supplied"
                 value={form.itemName}
-                onChange={(e) =>
-                  setForm({ ...form, itemName: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, itemName: e.target.value })}
               />
 
-              <input
-                type="number"
-                placeholder="Quantity"
-                value={form.quantity}
-                onChange={(e) =>
-                  setForm({ ...form, quantity: e.target.value })
-                }
-              />
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <input
+                  className="form-input"
+                  type="number"
+                  placeholder="Quantity"
+                  value={form.quantity}
+                  onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+                />
+                <input
+                  className="form-input"
+                  type="number"
+                  placeholder="Unit Price"
+                  value={form.pricePerItem}
+                  onChange={(e) => setForm({ ...form, pricePerItem: e.target.value })}
+                />
+              </div>
 
               <input
+                className="form-input"
                 type="number"
-                placeholder="Price Per Item"
-                value={form.pricePerItem}
-                onChange={(e) =>
-                  setForm({ ...form, pricePerItem: e.target.value })
-                }
-              />
-
-              <input
-                type="number"
-                placeholder="Paid Amount"
+                placeholder="Amount Paid Now"
                 value={form.paidAmount}
-                onChange={(e) =>
-                  setForm({ ...form, paidAmount: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, paidAmount: e.target.value })}
               />
 
               <div className="calculation-box">
-                <p>Total: Rs {totalPrice}</p>
-                <p>Remaining: Rs {remainingBalance}</p>
+                <p>
+                  <span>Invoice Total:</span>
+                  <span>PKR {totalPrice.toLocaleString()}</span>
+                </p>
+                <p style={{ marginTop: "8px", borderTop: "1px solid #e2e8f0", paddingTop: "8px", color: remainingBalance > 0 ? "#ef4444" : "#22c55e" }}>
+                  <span>Outstanding Balance:</span>
+                  <span>PKR {remainingBalance.toLocaleString()}</span>
+                </p>
               </div>
 
               <div className="modal-buttons">
                 <button type="submit" className="save-btn">
-                  Save
+                  {editId ? "Update Record" : "Save Entry"}
                 </button>
-                <button
-                  type="button"
-                  className="cancel-btn"
-                  onClick={closePopup}
-                >
+                <button type="button" className="cancel-btn" onClick={closePopup}>
                   Cancel
                 </button>
               </div>

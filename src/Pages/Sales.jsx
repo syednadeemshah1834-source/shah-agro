@@ -19,6 +19,7 @@ const Sales = () => {
   const shopId = "mainshop";
 
   const [sales, setSales] = useState([]);
+  const [products, setProducts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState(null);
   const [search, setSearch] = useState("");
@@ -55,7 +56,28 @@ const Sales = () => {
 
       });
 
-    return () => unsubscribe();
+    // Fetch Master Products
+    const unsubInv = onSnapshot(collection(db, "shops", shopId, "inventory"), (snap) => {
+      const invItems = snap.docs.map(d => ({ id: d.id, name: d.data().name, source: "inventory" }));
+      setProducts(prev => [...prev.filter(p => p.source !== "inventory"), ...invItems]);
+    });
+
+    const unsubSeeds = onSnapshot(collection(db, "shops", shopId, "seeds"), (snap) => {
+      const seedItems = snap.docs.map(d => ({ id: d.id, name: d.data().name, source: "seeds" }));
+      setProducts(prev => [...prev.filter(p => p.source !== "seeds"), ...seedItems]);
+    });
+
+    const unsubFerts = onSnapshot(collection(db, "shops", shopId, "fertilizers"), (snap) => {
+      const fertItems = snap.docs.map(d => ({ id: d.id, name: d.data().name, source: "fertilizers" }));
+      setProducts(prev => [...prev.filter(p => p.source !== "fertilizers"), ...fertItems]);
+    });
+
+    return () => {
+      unsubscribe();
+      unsubInv();
+      unsubSeeds();
+      unsubFerts();
+    };
 
   }, [shopId]);
 
@@ -214,157 +236,140 @@ const Sales = () => {
   /* ================= UI ================= */
 
   return (
-
     <div className="page-wrapper">
+      <div className="page-header">
+        <h2>Sales Management</h2>
+        <button
+          className="btn btn-primary"
+          onClick={() => {
+            setShowModal(true);
+            setEditId(null);
+            setFormData(emptyForm);
+          }}
+        >
+          Add New Sale
+        </button>
+      </div>
 
-      <h2>Sales Management</h2>
+      <div className="search-container">
+        <input
+          className="search-input"
+          placeholder="Search by customer or item..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
 
-      <button
-        className="add-btn"
-        onClick={() => {
-          setShowModal(true);
-          setEditId(null);
-          setFormData(emptyForm);
-        }}
-      >
-        + Add Sale
-      </button>
-
-      <input
-        placeholder="Search"
-        value={search}
-        onChange={(e) =>
-          setSearch(e.target.value)
-        }
-      />
-
-      <table>
-
-        <thead>
-
-          <tr>
-            <th>Customer</th>
-            <th>Item</th>
-            <th>Qty</th>
-            <th>Price</th>
-            <th>Total</th>
-            <th>Action</th>
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          {filteredSales.map((sale) => (
-
-            <tr key={sale.id}>
-
-              <td>{sale.customerName}</td>
-
-              <td>{sale.itemName}</td>
-
-              <td>{sale.quantity}</td>
-
-              <td>{sale.pricePerItem}</td>
-
-              <td>{sale.totalAmount}</td>
-
-              <td>
-
-                <button
-                  onClick={() =>
-                    handleEdit(sale)
-                  }
-                >
-                  Edit
-                </button>
-
-                <button
-                  onClick={() =>
-                    handleDelete(sale.id)
-                  }
-                >
-                  Delete
-                </button>
-
-              </td>
-
+      <div className="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Item</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Total</th>
+              <th>Action</th>
             </tr>
-
-          ))}
-
-          <tr>
-
-            <td colSpan="4">
-              Total Sales
-            </td>
-
-            <td>{grandTotal}</td>
-
-          </tr>
-
-        </tbody>
-
-      </table>
-
-      {/* MODAL */}
+          </thead>
+          <tbody>
+            {filteredSales.map((sale) => (
+              <tr key={sale.id}>
+                <td style={{ fontWeight: 500 }}>{sale.customerName}</td>
+                <td>{sale.itemName}</td>
+                <td>{sale.quantity}</td>
+                <td>PKR {sale.pricePerItem?.toLocaleString()}</td>
+                <td style={{ fontWeight: 600 }}>PKR {sale.totalAmount?.toLocaleString()}</td>
+                <td>
+                  <div className="action-btns">
+                    <button className="btn edit-btn" onClick={() => handleEdit(sale)}>Edit</button>
+                    <button className="btn delete-btn" onClick={() => handleDelete(sale.id)}>Delete</button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+            <tr className="total-row">
+              <td colSpan="4">Total Revenue</td>
+              <td colSpan="2" style={{ color: "var(--accent-secondary)" }}>PKR {grandTotal.toLocaleString()}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       {showModal && (
-
         <div className="modal-overlay">
-
           <div className="modal">
+            <h3>{editId ? "Edit Sale" : "New Sale Entry"}</h3>
+            
+            <div className="form-group">
+              <label>Customer Name</label>
+              <input
+                className="form-input"
+                name="customerName"
+                placeholder="Enter customer name"
+                value={formData.customerName}
+                onChange={handleChange}
+              />
+            </div>
 
-            <input
-              name="customerName"
-              placeholder="Customer Name"
-              value={formData.customerName}
-              onChange={handleChange}
-            />
+            <div className="form-group">
+              <label>Item Name</label>
+              <select
+                className="form-input"
+                name="itemName"
+                value={formData.itemName}
+                onChange={handleChange}
+              >
+                <option value="">-- Select Product --</option>
+                {[...new Set(products.map(p => p.name))].sort().map(name => (
+                  <option key={name} value={name}>{name}</option>
+                ))}
+              </select>
+            </div>
 
-            <input
-              name="itemName"
-              placeholder="Item Name"
-              value={formData.itemName}
-              onChange={handleChange}
-            />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="form-group">
+                <label>Quantity</label>
+                <input
+                  className="form-input"
+                  name="quantity"
+                  type="number"
+                  placeholder="0"
+                  value={formData.quantity}
+                  onChange={handleChange}
+                />
+              </div>
 
-            <input
-              name="quantity"
-              placeholder="Quantity"
-              value={formData.quantity}
-              onChange={handleChange}
-            />
+              <div className="form-group">
+                <label>Price Per Item</label>
+                <input
+                  className="form-input"
+                  name="pricePerItem"
+                  type="number"
+                  placeholder="0.00"
+                  value={formData.pricePerItem}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
 
-            <input
-              name="pricePerItem"
-              placeholder="Price"
-              value={formData.pricePerItem}
-              onChange={handleChange}
-            />
+            <div style={{ background: "#f8fafc", padding: "16px", borderRadius: "12px", marginBottom: "24px", border: "1px dashed var(--border-color)" }}>
+              <p style={{ margin: 0, fontSize: "14px", color: "var(--text-secondary)" }}>Auto-calculated Total:</p>
+              <h4 style={{ margin: "4px 0 0 0", fontSize: "20px", fontWeight: 700, color: "var(--text-primary)" }}>PKR {totalAmount.toLocaleString()}</h4>
+            </div>
 
-            <p>Total: {totalAmount}</p>
-
-            <button onClick={handleSave}>
-              {editId ? "Update" : "Save"}
-            </button>
-
-            <button
-              onClick={() =>
-                setShowModal(false)
-              }
-            >
-              Cancel
-            </button>
-
+            <div className="modal-footer">
+              <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleSave}>
+                {editId ? "Update Sale" : "Save Entry"}
+              </button>
+              <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                Cancel
+              </button>
+            </div>
           </div>
-
         </div>
-
       )}
-
     </div>
-
   );
 
 };

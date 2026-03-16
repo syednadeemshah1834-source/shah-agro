@@ -117,73 +117,50 @@ const Reports = () => {
   /* ================= UI ================= */
 
   return (
-
-    <div className="reports-container">
-
-      <h1 className="reports-title">
-        Business Reports Dashboard
-      </h1>
+    <div className="page-wrapper">
+      <div className="page-header">
+        <h2>Intelligence & Business Reports</h2>
+        <p style={{ color: "var(--text-secondary)", marginTop: "8px" }}>Select a category to view detailed analytical breakdown and historical data</p>
+      </div>
 
       <div className="reports-grid">
-
         {/* SALES */}
-        <div
-          className="report-card sales"
-          onClick={() => navigate("/sales")}
-        >
-          <h3>Total Sales Report</h3>
-          <p>PKR {totalSales.toLocaleString()}</p>
+        <div className="report-card sales" onClick={() => navigate("/sales")}>
+          <h3>Total Sales Transactions</h3>
+          <div className="report-value">PKR {totalSales.toLocaleString()}</div>
         </div>
 
         {/* PURCHASE */}
-        <div
-          className="report-card purchase"
-          onClick={() => navigate("/purchase")}
-        >
-          <h3>Purchase Report</h3>
-          <p>PKR {totalPurchase.toLocaleString()}</p>
+        <div className="report-card purchase" onClick={() => navigate("/purchase")}>
+          <h3>Stock Acquisition Volume</h3>
+          <div className="report-value">PKR {totalPurchase.toLocaleString()}</div>
         </div>
 
         {/* PROFIT */}
-        <div
-          className="report-card profit"
-          onClick={() => navigate("/profit-loss")}
-        >
-          <h3>Profit Report</h3>
-          <p>PKR {totalProfit.toLocaleString()}</p>
+        <div className="report-card profit" onClick={() => navigate("/profit-loss")}>
+          <h3>Operational Profitability</h3>
+          <div className="report-value">PKR {totalProfit.toLocaleString()}</div>
         </div>
 
         {/* INVENTORY */}
-        <div
-          className="report-card inventory"
-          onClick={() => navigate("/inventory")}
-        >
-          <h3>Inventory Report</h3>
-          <p>{inventoryCount} Products</p>
+        <div className="report-card inventory" onClick={() => navigate("/inventory")}>
+          <h3>Product Catalog Health</h3>
+          <div className="report-value">{inventoryCount} Active SKUs</div>
         </div>
 
         {/* DUE */}
-        <div
-          className="report-card due"
-          onClick={() => navigate("/duebills")}
-        >
-          <h3>Due Report</h3>
-          <p>PKR {totalDue.toLocaleString()}</p>
+        <div className="report-card due" onClick={() => navigate("/duebills")}>
+          <h3>Outstanding Receivables</h3>
+          <div className="report-value">PKR {totalDue.toLocaleString()}</div>
         </div>
 
         {/* EXPIRY */}
-        <div
-          className="report-card expiry"
-          onClick={() => navigate("/smartalerts")}
-        >
-          <h3>Expiry Report</h3>
-          <p>{expiryCount} Expiring Items</p>
+        <div className="report-card expiry" onClick={() => navigate("/smartalerts")}>
+          <h3>Risk Assessment (Expiries)</h3>
+          <div className="report-value">{expiryCount} Critical Items</div>
         </div>
-
       </div>
-
     </div>
-
   );
 
 };

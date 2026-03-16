@@ -49,7 +49,7 @@ const CountUp = ({ value }) => {
   return <span>{display.toLocaleString()}</span>;
 };
 
-const Customers = () => {
+const FinancialControlCenter = () => {
   const [sales, setSales] = useState([]);
   const [purchases, setPurchases] = useState([]);
   const [inventory, setInventory] = useState([]);
@@ -111,25 +111,19 @@ const Customers = () => {
       }
     };
 
-    /* 1️⃣ LOAD INVENTORY AS MASTER LIVE STOCK */
-
     inventory.forEach(item => {
       const name = readName(item);
       const qty = readQty(item);
       const rate = readRate(item);
-
       ensureItem(name, rate);
       map[name].inventoryStock = qty;
       map[name].rate = rate;
     });
 
-    /* 2️⃣ ADD SEEDS & FERTILIZERS ONLY IF NOT IN INVENTORY */
-
     [...seeds, ...fertilizers].forEach(item => {
       const name = readName(item);
       const qty = readQty(item);
       const rate = readRate(item);
-
       if (!map[name]) {
         ensureItem(name, rate);
         map[name].inventoryStock = qty;
@@ -137,36 +131,22 @@ const Customers = () => {
       }
     });
 
-    /* 3️⃣ TRACK PURCHASES (SUPPLIER RECORD ONLY) */
-
     purchases.forEach(p => {
-      if (Array.isArray(p.items)) {
-        p.items.forEach(item => {
-          const name = readName(item);
-          const qty = readQty(item);
-          ensureItem(name);
-          map[name].purchased += qty;
-        });
-      }
+      const name = readName(p);
+      const qty = readQty(p);
+      ensureItem(name);
+      map[name].purchased += qty;
     });
-
-    /* 4️⃣ TRACK SALES */
 
     sales.forEach(s => {
-      if (Array.isArray(s.items)) {
-        s.items.forEach(item => {
-          const name = readName(item);
-          const qty = readQty(item);
-          ensureItem(name);
-          map[name].sold += qty;
-        });
-      }
+      const name = readName(s);
+      const qty = readQty(s);
+      ensureItem(name);
+      map[name].sold += qty;
     });
 
-    /* 5️⃣ FINAL STOCK = INVENTORY (already live updated) */
-
     Object.values(map).forEach(item => {
-      item.finalStock = item.inventoryStock;
+      item.finalStock = item.inventoryStock + item.purchased - item.sold;
     });
 
     return Object.values(map);
@@ -194,51 +174,54 @@ const Customers = () => {
   /* ================= UI ================= */
 
   return (
-    <div className="finance-wrapper">
-      <h1>Inventory & Financial Control Center</h1>
+    <div className="page-wrapper">
+      <div className="page-header">
+        <h2>Inventory & Financial Control Center</h2>
+        <div style={{ color: "var(--text-secondary)", fontSize: "14px" }}>Shop: {shopId.toUpperCase()}</div>
+      </div>
 
-      <div className="cash-cards">
-        <div className="card cash-in">
-          <h3>Total Sales</h3>
-          <h2>PKR <CountUp value={totalCashIn} /></h2>
+      <div className="financial-grid">
+        <div className="finance-card sales">
+          <h3>Total Revenue</h3>
+          <div className="amount">PKR <CountUp value={totalCashIn} /></div>
         </div>
 
-        <div className="card cash-out">
-          <h3>Total Purchases</h3>
-          <h2>PKR <CountUp value={totalCashOut} /></h2>
+        <div className="finance-card purchases">
+          <h3>Total Expenditure</h3>
+          <div className="amount">PKR <CountUp value={totalCashOut} /></div>
         </div>
 
-        <div className="card inventory-value">
-          <h3>Total Inventory Value</h3>
-          <h2>PKR <CountUp value={totalInventoryValue} /></h2>
+        <div className="finance-card inventory">
+          <h3>Asset Valuation</h3>
+          <div className="amount">PKR <CountUp value={totalInventoryValue} /></div>
         </div>
 
-        <div className={`card ${netBalance >= 0 ? "profit" : "loss"}`}>
-          <h3>Net Balance</h3>
-          <h2>PKR <CountUp value={netBalance} /></h2>
+        <div className={`finance-card balance ${netBalance >= 0 ? "profit" : "loss"}`}>
+          <h3>Net Operational Cashflow</h3>
+          <div className="amount">PKR <CountUp value={netBalance} /></div>
         </div>
       </div>
 
-      <div className="stock-table">
-        <h3>Live Stock (Inventory Based)</h3>
+      <div className="table-container">
+        <h3>Real-time Stock Synchronization</h3>
         <table>
           <thead>
             <tr>
-              <th>Item</th>
-              <th>Supplier Purchased</th>
-              <th>Sold</th>
-              <th>Live Inventory Stock</th>
-              <th>Stock Value</th>
+              <th>Stock Item</th>
+              <th>Units Procured</th>
+              <th>Units Dispatched</th>
+              <th>Available Units</th>
+              <th>Current Valuation</th>
             </tr>
           </thead>
           <tbody>
             {stockData.map(item => (
               <tr key={item.name}>
-                <td>{item.name}</td>
+                <td className="item-name">{item.name}</td>
                 <td>{item.purchased}</td>
                 <td>{item.sold}</td>
-                <td>{item.finalStock}</td>
-                <td>
+                <td className="stock-value">{item.finalStock}</td>
+                <td className="valuation-cell">
                   PKR {(item.finalStock * item.rate).toLocaleString()}
                 </td>
               </tr>
@@ -250,5 +233,5 @@ const Customers = () => {
   );
 };
 
-export default Customers;
+export default FinancialControlCenter;
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   collection,
   addDoc,
@@ -16,10 +16,9 @@ const Fertilizers = () => {
 
   const [fertilizers, setFertilizers] = useState([]);
   const [sales, setSales] = useState([]);
+  const [purchases, setPurchases] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [searchTerm, setSearchTerm] = useState("");
-
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
 
@@ -31,94 +30,74 @@ const Fertilizers = () => {
     expiry: "",
   });
 
-  /* ================= FETCH DATA ================= */
-
   useEffect(() => {
     const fertRef = collection(db, "shops", shopId, "fertilizers");
     const salesRef = collection(db, "shops", shopId, "sales");
+    const purchasesRef = collection(db, "shops", shopId, "purchases");
 
     const unsubFert = onSnapshot(fertRef, (snapshot) => {
-      const list = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setFertilizers(list);
+      setFertilizers(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       setLoading(false);
     });
 
     const unsubSales = onSnapshot(salesRef, (snapshot) => {
-      const list = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setSales(list);
+      setSales(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+    });
+
+    const unsubPurchases = onSnapshot(purchasesRef, (snapshot) => {
+      setPurchases(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
     });
 
     return () => {
       unsubFert();
       unsubSales();
+      unsubPurchases();
     };
   }, []);
 
-  /* ================= LIVE STOCK ================= */
-
   const liveStock = useMemo(() => {
     const map = {};
-
     fertilizers.forEach((item) => {
       map[item.name] = (map[item.name] || 0) + Number(item.quantity);
     });
-
-    sales.forEach((sale) => {
-      map[sale.itemName] =
-        (map[sale.itemName] || 0) - Number(sale.quantity);
+    purchases.forEach((p) => {
+      map[p.itemName] = (map[p.itemName] || 0) + Number(p.quantity);
     });
-
+    sales.forEach((sale) => {
+      map[sale.itemName] = (map[sale.itemName] || 0) - Number(sale.quantity);
+    });
     return map;
-  }, [fertilizers, sales]);
+  }, [fertilizers, sales, purchases]);
 
-  /* ================= TOTAL VALUE PER ITEM ================= */
-
-  const itemValue = (name, rate) => {
+  const itemValue = useCallback((name, rate) => {
     const stock = liveStock[name] || 0;
     return stock * rate;
-  };
-
-  /* ================= GRAND TOTAL ================= */
+  }, [liveStock]);
 
   const grandTotalValue = useMemo(() => {
     return fertilizers.reduce((total, item) => {
       return total + itemValue(item.name, item.rate);
     }, 0);
-  }, [fertilizers, liveStock]);
-
-  /* ================= SEARCH ================= */
+  }, [fertilizers, itemValue]);
 
   const filtered = fertilizers.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  /* ================= ADD / UPDATE ================= */
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!formData.name || !formData.quantity || !formData.rate) {
       alert("Please fill required fields");
       return;
     }
-
     if (editingItem) {
-      await updateDoc(
-        doc(db, "shops", shopId, "fertilizers", editingItem.id),
-        {
-          name: formData.name,
-          quantity: Number(formData.quantity),
-          rate: Number(formData.rate),
-          supplier: formData.supplier,
-          expiry: formData.expiry,
-        }
-      );
+      await updateDoc(doc(db, "shops", shopId, "fertilizers", editingItem.id), {
+        name: formData.name,
+        quantity: Number(formData.quantity),
+        rate: Number(formData.rate),
+        supplier: formData.supplier,
+        expiry: formData.expiry,
+      });
     } else {
       await addDoc(collection(db, "shops", shopId, "fertilizers"), {
         name: formData.name,
@@ -129,11 +108,8 @@ const Fertilizers = () => {
         createdAt: serverTimestamp(),
       });
     }
-
     resetForm();
   };
-
-  /* ================= DELETE ================= */
 
   const handleDelete = async (id) => {
     if (window.confirm("Delete this fertilizer?")) {
@@ -141,11 +117,8 @@ const Fertilizers = () => {
     }
   };
 
-  /* ================= EDIT ================= */
-
   const handleEdit = (item) => {
     setEditingItem(item);
-
     setFormData({
       name: item.name,
       quantity: item.quantity,
@@ -153,251 +126,98 @@ const Fertilizers = () => {
       supplier: item.supplier,
       expiry: item.expiry,
     });
-
     setShowModal(true);
   };
-
-  /* ================= RESET ================= */
 
   const resetForm = () => {
     setShowModal(false);
     setEditingItem(null);
-
-    setFormData({
-      name: "",
-      quantity: "",
-      rate: "",
-      supplier: "",
-      expiry: "",
-    });
+    setFormData({ name: "", quantity: "", rate: "", supplier: "", expiry: "" });
   };
 
-  /* ================= UI ================= */
-
   return (
-    <div className="fertilizer-page">
-
-      {/* HEADER */}
-
+    <div className="page-wrapper">
       <div className="page-header">
-
         <h2>Fertilizers Inventory</h2>
-
-        <button
-          className="add-btn"
-          onClick={() => setShowModal(true)}
-        >
-          + Add Fertilizer
+        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+          Add New Fertilizer
         </button>
-
       </div>
-
-      {/* SEARCH */}
-
-      <input
-        className="search-input"
-        placeholder="Search fertilizer..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-
-      {/* TABLE */}
-
-      <div className="table-wrapper">
-
+      <div className="search-container">
+        <input
+          className="search-input"
+          placeholder="Filter fertilizers by name..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+      <div className="table-container">
         {loading ? (
-          <p>Loading...</p>
+          <div style={{ padding: "40px", textAlign: "center", color: "var(--text-secondary)" }}>Loading stock data...</div>
         ) : (
-          <table className="fertilizer-table">
-
+          <table>
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Stock</th>
-                <th>Rate</th>
+                <th>Product Name</th>
+                <th>Current Stock</th>
+                <th>Unit Rate</th>
                 <th>Total Value</th>
                 <th>Supplier</th>
-                <th>Expiry</th>
-                <th>Actions</th>
+                <th>Expiry Date</th>
+                <th>Record Actions</th>
               </tr>
             </thead>
-
             <tbody>
-
               {filtered.map((item) => {
-
                 const stock = liveStock[item.name] || 0;
                 const totalValue = itemValue(item.name, item.rate);
-
                 return (
                   <tr key={item.id}>
-
-                    <td>{item.name}</td>
-
-                    <td className="stock">
-                      {stock}
-                    </td>
-
+                    <td style={{ fontWeight: 600 }}>{item.name}</td>
+                    <td className="stock-value">{stock}</td>
+                    <td className="price-value">PKR {item.rate?.toLocaleString()}</td>
+                    <td style={{ fontWeight: 700, color: "var(--accent-primary)" }}>PKR {totalValue.toLocaleString()}</td>
+                    <td style={{ color: "var(--text-secondary)", fontSize: "13px" }}>{item.supplier}</td>
+                    <td style={{ fontSize: "13px" }}>{item.expiry}</td>
                     <td>
-                      Rs {item.rate}
+                      <div className="action-btns">
+                        <button className="edit-btn" onClick={() => handleEdit(item)}>Edit</button>
+                        <button className="delete-btn" onClick={() => handleDelete(item.id)}>Delete</button>
+                      </div>
                     </td>
-
-                    <td className="value">
-                      Rs {totalValue.toLocaleString()}
-                    </td>
-
-                    <td>
-                      {item.supplier}
-                    </td>
-
-                    <td>
-                      {item.expiry}
-                    </td>
-
-                    <td className="actions">
-
-                      <button
-                        className="edit-btn"
-                        onClick={() => handleEdit(item)}
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        className="delete-btn"
-                        onClick={() => handleDelete(item.id)}
-                      >
-                        Delete
-                      </button>
-
-                    </td>
-
                   </tr>
                 );
               })}
-
             </tbody>
-
-            {/* FOOTER TOTAL */}
-
             <tfoot>
-
               <tr className="grand-total-row">
-
-                <td colSpan="3">
-                  GRAND TOTAL INVENTORY VALUE
-                </td>
-
-                <td>
-                  Rs {grandTotalValue.toLocaleString()}
-                </td>
-
-                <td colSpan="3"></td>
-
+                <td colSpan="3" style={{ textAlign: "right", paddingRight: "32px", color: "var(--text-secondary)" }}>Total Inventory Valuation:</td>
+                <td colSpan="4">PKR {grandTotalValue.toLocaleString()}</td>
               </tr>
-
             </tfoot>
-
           </table>
         )}
-
       </div>
-
-      {/* MODAL */}
-
       {showModal && (
         <div className="modal-overlay">
-
           <div className="modal">
-
-            <h3>
-              {editingItem
-                ? "Edit Fertilizer"
-                : "Add Fertilizer"}
-            </h3>
-
+            <h3>{editingItem ? "Update Fertilizer Entry" : "Record New Fertilizer Stock"}</h3>
             <form onSubmit={handleSubmit}>
-
-              <input
-                placeholder="Name"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    name: e.target.value,
-                  })
-                }
-              />
-
-              <input
-                type="number"
-                placeholder="Quantity"
-                value={formData.quantity}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    quantity: e.target.value,
-                  })
-                }
-              />
-
-              <input
-                type="number"
-                placeholder="Rate"
-                value={formData.rate}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    rate: e.target.value,
-                  })
-                }
-              />
-
-              <input
-                placeholder="Supplier"
-                value={formData.supplier}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    supplier: e.target.value,
-                  })
-                }
-              />
-
-              <input
-                type="date"
-                value={formData.expiry}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    expiry: e.target.value,
-                  })
-                }
-              />
-
-              <div className="modal-buttons">
-
-                <button type="submit" className="save-btn">
-                  Save
-                </button>
-
-                <button
-                  type="button"
-                  className="cancel-btn"
-                  onClick={resetForm}
-                >
-                  Cancel
-                </button>
-
+              <div className="form-group"><label>Product Name</label><input className="form-input" placeholder="e.g. Urea 50kg" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} /></div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <div className="form-group"><label>Initial Quantity</label><input className="form-input" type="number" placeholder="0" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: e.target.value })} /></div>
+                <div className="form-group"><label>Rate (PKR)</label><input className="form-input" type="number" placeholder="0" value={formData.rate} onChange={(e) => setFormData({ ...formData, rate: e.target.value })} /></div>
               </div>
-
+              <div className="form-group"><label>Supplier Source</label><input className="form-input" placeholder="Enter supplier name" value={formData.supplier} onChange={(e) => setFormData({ ...formData, supplier: e.target.value })} /></div>
+              <div className="form-group"><label>Expiry Date</label><input className="form-input" type="date" value={formData.expiry} onChange={(e) => setFormData({ ...formData, expiry: e.target.value })} /></div>
+              <div className="modal-footer">
+                <button type="submit" className="save-btn">{editingItem ? "Update Stock" : "Save Entry"}</button>
+                <button type="button" className="cancel-btn" onClick={resetForm}>Cancel</button>
+              </div>
             </form>
-
           </div>
-
         </div>
       )}
-
     </div>
   );
 };
