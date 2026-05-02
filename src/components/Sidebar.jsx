@@ -1,5 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useState } from "react";
 import { 
   MdDashboard, 
   MdInventory, 
@@ -26,6 +27,7 @@ import Icon from "../Images/seed10.jpg";
 const Sidebar = () => {
   const location = useLocation();
   const [appName, setAppName] = React.useState(localStorage.getItem("app-name") || "Shah Agro");
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   React.useEffect(() => {
     const handleStorage = () => {
@@ -53,7 +55,25 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="sidebar">
+    <>
+      {/* Hamburger button - visible only on mobile */}
+      <button
+        className="hamburger-btn"
+        onClick={() => setMobileOpen(!mobileOpen)}
+        aria-label="Toggle Menu"
+      >
+        {mobileOpen ? "✕" : "☰"}
+      </button>
+
+      {/* Overlay backdrop for mobile */}
+      {mobileOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      <div className={`sidebar ${mobileOpen ? "mobile-active" : ""}`}>
       <div className="sidebar-header">
         <div className="logo-container">
           <img src={Icon} alt="Logo" className="sidebar-logo" />
@@ -66,6 +86,7 @@ const Sidebar = () => {
           <Link
             key={item.path}
             to={item.path}
+            onClick={() => setMobileOpen(false)}
             className={location.pathname === item.path || (item.path === "/dashboard" && location.pathname === "/") ? "active" : ""}
           >
             <span className="nav-icon">{item.icon}</span>
@@ -74,6 +95,7 @@ const Sidebar = () => {
         ))}
       </nav>
     </div>
+    </>
   );
 };
 
