@@ -170,8 +170,10 @@ const Fertilizers = () => {
       </div>
       <div className="table-wrapper">
         <div className="table-container">
-        {filtered.length === 0 ? (
+        {loading ? (
           <div style={{ padding: "40px", textAlign: "center", color: "var(--text-secondary)" }}>Loading stock data...</div>
+        ) : filtered.length === 0 ? (
+          <div style={{ padding: "40px", textAlign: "center", color: "var(--text-secondary)" }}>No items found.</div>
         ) : (
           <table>
             <thead>
