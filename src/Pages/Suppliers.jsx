@@ -9,6 +9,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { generateSupplierInvoice } from "./supplierInvoice";
 import "./Suppliers.css";
 
 const Suppliers = () => {
@@ -146,6 +147,7 @@ const Suppliers = () => {
                 </td>
                 <td>
                   <div className="action-btns">
+                    <button className="print-btn" onClick={() => generateSupplierInvoice(sup)} style={{ background: "#475569", color: "white", padding: "6px 12px", borderRadius: "6px", border: "none", cursor: "pointer", fontSize: "0.85rem", fontWeight: 500, marginRight: "4px" }}>Print</button>
                     <button className="edit-btn" onClick={() => openPopup(sup)}>Edit</button>
                     <button className="delete-btn" onClick={() => handleDelete(sup.id)}>Delete</button>
                   </div>

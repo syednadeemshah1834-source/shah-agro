@@ -223,6 +223,20 @@ tr:hover td {
   gap: 8px;
 }
 
+.print-btn {
+  color: #10b981;
+  background: #ecfdf5;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.print-btn:hover { background: #10b981; color: white; }
+
 .edit-btn {
   color: var(--accent-secondary);
   background: #eff6ff;

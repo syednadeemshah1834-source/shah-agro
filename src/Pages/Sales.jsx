@@ -12,6 +12,8 @@ import {
 } from "firebase/firestore";
 
 import { db } from "../firebase";
+import { generateInvoice } from "./Invoice";
+import { logActivity } from "../utils/logger";
 import "./Sales.css";
 
 const Sales = () => {
@@ -26,9 +28,11 @@ const Sales = () => {
 
   const emptyForm = {
     customerName: "",
+    phone: "",
     itemName: "",
     quantity: "",
-    pricePerItem: ""
+    pricePerItem: "",
+    paidAmount: ""
   };
 
   const [formData, setFormData] = useState(emptyForm);
@@ -92,6 +96,12 @@ const Sales = () => {
   const totalAmount =
     quantity * price;
 
+  const paidAmount =
+    Number(formData.paidAmount) || 0;
+
+  const remainingBalance =
+    Math.max(totalAmount - paidAmount, 0);
+
   const grandTotal =
     useMemo(() => {
 
@@ -130,10 +140,13 @@ const Sales = () => {
       const data = {
 
         customerName: formData.customerName,
+        phone: formData.phone || "-",
         itemName: formData.itemName,
         quantity: quantity,
         pricePerItem: price,
         totalAmount: totalAmount,
+        paidAmount: paidAmount,
+        remainingBalance: remainingBalance,
         updatedAt: serverTimestamp()
 
       };
@@ -144,6 +157,7 @@ const Sales = () => {
           doc(db, "shops", shopId, "sales", editId);
 
         await updateDoc(docRef, data);
+        await logActivity("Updated", "Sales", `Updated sale for ${formData.customerName}: ${quantity}x ${formData.itemName}`);
 
         alert("Updated successfully");
 
@@ -156,6 +170,26 @@ const Sales = () => {
             createdAt: serverTimestamp()
           }
         );
+
+        // If there is a remaining balance, log it in Due Bills automatically
+        if (remainingBalance > 0) {
+          await addDoc(
+            collection(db, "shops", shopId, "dueBills"),
+            {
+              customerName: formData.customerName,
+              phone: formData.phone || "-",
+              items: `${quantity}x ${formData.itemName}`,
+              totalAmount: totalAmount,
+              paidAmount: paidAmount,
+              remainingAmount: remainingBalance,
+              status: paidAmount > 0 ? "partial" : "unpaid",
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp()
+            }
+          );
+        }
+
+        await logActivity("Added", "Sales", `New sale added: ${quantity}x ${formData.itemName} to ${formData.customerName} (Total: ${totalAmount})`);
 
         alert("Added successfully");
 
@@ -183,9 +217,11 @@ const Sales = () => {
 
     setFormData({
       customerName: sale.customerName,
+      phone: sale.phone || "",
       itemName: sale.itemName,
       quantity: sale.quantity,
-      pricePerItem: sale.pricePerItem
+      pricePerItem: sale.pricePerItem,
+      paidAmount: sale.paidAmount || ""
     });
 
     setShowModal(true);
@@ -207,6 +243,7 @@ const Sales = () => {
         doc(db, "shops", shopId, "sales", id);
 
       await deleteDoc(docRef);
+      await logActivity("Deleted", "Sales", `Deleted a sales record`);
 
       alert("Deleted successfully");
 
@@ -282,6 +319,7 @@ const Sales = () => {
                 <td style={{ fontWeight: 600 }}>PKR {sale.totalAmount?.toLocaleString()}</td>
                 <td>
                   <div className="action-btns">
+                    <button className="btn print-btn" onClick={() => generateInvoice(sale)}>Print</button>
                     <button className="btn edit-btn" onClick={() => handleEdit(sale)}>Edit</button>
                     <button className="btn delete-btn" onClick={() => handleDelete(sale.id)}>Delete</button>
                   </div>
@@ -301,15 +339,28 @@ const Sales = () => {
           <div className="modal">
             <h3>{editId ? "Edit Sale" : "New Sale Entry"}</h3>
             
-            <div className="form-group">
-              <label>Customer Name</label>
-              <input
-                className="form-input"
-                name="customerName"
-                placeholder="Enter customer name"
-                value={formData.customerName}
-                onChange={handleChange}
-              />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="form-group">
+                <label>Customer Name</label>
+                <input
+                  className="form-input"
+                  name="customerName"
+                  placeholder="Enter customer name"
+                  value={formData.customerName}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Cell No / Phone</label>
+                <input
+                  className="form-input"
+                  name="phone"
+                  placeholder="Enter cell number"
+                  value={formData.phone}
+                  onChange={handleChange}
+                />
+              </div>
             </div>
 
             <div className="form-group">
@@ -353,8 +404,34 @@ const Sales = () => {
               </div>
             </div>
 
-            <div style={{ background: "#f8fafc", padding: "16px", borderRadius: "12px", marginBottom: "24px", border: "1px dashed var(--border-color)" }}>
-              <p style={{ margin: 0, fontSize: "14px", color: "var(--text-secondary)" }}>Auto-calculated Total:</p>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginTop: "16px" }}>
+              <div className="form-group">
+                <label style={{ color: "var(--accent-primary)", fontWeight: 600 }}>Amount Paid</label>
+                <input
+                  className="form-input"
+                  name="paidAmount"
+                  type="number"
+                  placeholder="0.00"
+                  value={formData.paidAmount}
+                  onChange={handleChange}
+                  style={{ borderColor: "var(--accent-primary)" }}
+                />
+              </div>
+
+              <div className="form-group">
+                <label style={{ color: "#ef4444", fontWeight: 600 }}>Remaining Balance</label>
+                <input
+                  className="form-input"
+                  type="number"
+                  disabled
+                  value={remainingBalance}
+                  style={{ background: "#fef2f2", color: "#ef4444", fontWeight: "bold" }}
+                />
+              </div>
+            </div>
+
+            <div style={{ background: "#f8fafc", padding: "16px", borderRadius: "12px", marginBottom: "24px", marginTop: "16px", border: "1px dashed var(--border-color)" }}>
+              <p style={{ margin: 0, fontSize: "14px", color: "var(--text-secondary)" }}>Total Bill Amount:</p>
               <h4 style={{ margin: "4px 0 0 0", fontSize: "20px", fontWeight: 700, color: "var(--text-primary)" }}>PKR {totalAmount.toLocaleString()}</h4>
             </div>
 

@@ -6,7 +6,8 @@ import {
   MdOutlineSell, 
   MdOutlineShoppingBag, 
   MdOutlineNotificationsActive, 
-  MdOutlineSettings 
+  MdOutlineSettings,
+  MdHistory
 } from "react-icons/md";
 import { 
   GiFarmer, 
@@ -18,13 +19,21 @@ import {
   HiOutlineDocumentReport 
 } from "react-icons/hi";
 import { PiPlant } from "react-icons/pi";
-import { LiaShippingFastSolid } from "react-icons/lia";
 import { TbReportMoney } from "react-icons/tb";
 import "./Sidebar.css";
 import Icon from "../Images/seed10.jpg";
 
 const Sidebar = () => {
   const location = useLocation();
+  const [appName, setAppName] = React.useState(localStorage.getItem("app-name") || "Shah Agro");
+
+  React.useEffect(() => {
+    const handleStorage = () => {
+      setAppName(localStorage.getItem("app-name") || "Shah Agro");
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   const navItems = [
     { path: "/dashboard", label: "Dashboard", icon: <MdDashboard /> },
@@ -35,11 +44,11 @@ const Sidebar = () => {
     { path: "/inventory", label: "Inventory", icon: <MdInventory /> },
     { path: "/sales", label: "Sales", icon: <MdOutlineSell /> },
     { path: "/purchase", label: "Purchase", icon: <MdOutlineShoppingBag /> },
-    { path: "/suppliers", label: "Suppliers", icon: <LiaShippingFastSolid /> },
     { path: "/livestocks", label: "Live Stock", icon: <GiCow /> },
     { path: "/smartalerts", label: "Smart Alerts", icon: <MdOutlineNotificationsActive /> },
     { path: "/profit-loss", label: "Profit & Loss", icon: <TbReportMoney /> },
     { path: "/reports", label: "Reports", icon: <HiOutlineDocumentReport /> },
+    { path: "/logs", label: "Activity Logs", icon: <MdHistory /> },
     { path: "/settings", label: "Settings", icon: <MdOutlineSettings /> },
   ];
 
@@ -49,7 +58,7 @@ const Sidebar = () => {
         <div className="logo-container">
           <img src={Icon} alt="Logo" className="sidebar-logo" />
         </div>
-        <h1 className="sidebar-title">Shah Agro</h1>
+        <h1 className="sidebar-title">{appName}</h1>
       </div>
 
       <nav className="sidebar-nav">

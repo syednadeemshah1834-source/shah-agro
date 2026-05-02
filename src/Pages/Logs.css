@@ -1,0 +1,30 @@
+.log-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.log-badge.sales { background: #dbeafe; color: #1e40af; }
+.log-badge.purchases { background: #fce7f3; color: #be185d; }
+.log-badge.inventory { background: #fef3c7; color: #b45309; }
+.log-badge.seeds { background: #dcfce7; color: #166534; }
+.log-badge.fertilizers { background: #e0e7ff; color: #3730a3; }
+.log-badge.duebills { background: #ffedd5; color: #c2410c; }
+.log-badge.system-error { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+.log-action {
+  font-weight: 800;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.log-action.added, .log-action.created { color: #10b981; }
+.log-action.updated, .log-action.edited { color: #f59e0b; }
+.log-action.deleted, .log-action.removed { color: #ef4444; }
+.log-action.error { color: #dc2626; text-decoration: underline; }

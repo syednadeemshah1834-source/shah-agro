@@ -11,6 +11,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { generatePurchaseInvoice } from "./purchaseInvoice";
 import "./Purchase.css";
 
 const Purchase = () => {
@@ -49,17 +50,17 @@ const Purchase = () => {
 
     // Fetch Master Products
     const unsubInv = onSnapshot(collection(db, "shops", shopId, "inventory"), (snap) => {
-      const invItems = snap.docs.map(d => ({ id: d.id, name: d.data().name, source: "inventory" }));
+      const invItems = snap.docs.map(d => ({ id: d.id, source: "inventory", ...d.data() }));
       setProducts(prev => [...prev.filter(p => p.source !== "inventory"), ...invItems]);
     });
 
     const unsubSeeds = onSnapshot(collection(db, "shops", shopId, "seeds"), (snap) => {
-      const seedItems = snap.docs.map(d => ({ id: d.id, name: d.data().name, source: "seeds" }));
+      const seedItems = snap.docs.map(d => ({ id: d.id, source: "seeds", ...d.data() }));
       setProducts(prev => [...prev.filter(p => p.source !== "seeds"), ...seedItems]);
     });
 
     const unsubFerts = onSnapshot(collection(db, "shops", shopId, "fertilizers"), (snap) => {
-      const fertItems = snap.docs.map(d => ({ id: d.id, name: d.data().name, source: "fertilizers" }));
+      const fertItems = snap.docs.map(d => ({ id: d.id, source: "fertilizers", ...d.data() }));
       setProducts(prev => [...prev.filter(p => p.source !== "fertilizers"), ...fertItems]);
     });
 
@@ -151,9 +152,9 @@ const Purchase = () => {
 
   const filteredPurchases = purchases.filter(
     (p) =>
-      p.supplierName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.cellNo.toLowerCase().includes(searchTerm.toLowerCase())
+      (p.supplierName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (p.itemName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (p.cellNo || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const overallTotal = filteredPurchases.reduce((acc, p) => acc + p.total, 0);
@@ -218,13 +219,14 @@ const Purchase = () => {
                 <td>PKR {p.price?.toLocaleString()}</td>
                 <td className="highlight">PKR {p.total.toLocaleString()}</td>
                 <td>
-                  <div className="action-btns">
-                    <button className="edit-btn" onClick={() => handleEdit(p)}>Edit</button>
-                    <button className="delete-btn" onClick={() => handleDelete(p.id)}>Delete</button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                    <div className="action-btns">
+                      <button className="print-btn" onClick={() => generatePurchaseInvoice(p)}>Print</button>
+                      <button className="edit-btn" onClick={() => handleEdit(p)}>Edit</button>
+                      <button className="delete-btn" onClick={() => handleDelete(p.id)}>Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

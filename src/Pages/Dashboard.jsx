@@ -12,7 +12,6 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
-  Legend,
   ReferenceLine
 } from "recharts";
 

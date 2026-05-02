@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
+import Footer from "./components/Footer";
 
 import Login from "./Pages/Login";
 
@@ -16,20 +17,30 @@ import DueBills from "./Pages/DueBills";
 import Inventory from "./Pages/Inventory";
 import Sales from "./Pages/Sales";
 import Purchase from "./Pages/Purchase";
-import Suppliers from "./Pages/Suppliers";
 import Livestocks from "./Pages/Livestocks";
 import Smartalerts from "./Pages/Smartalerts";
 import ProfitLoss from "./Pages/ProfitLoss";
 import Reports from "./Pages/Reports";
 import Settings from "./Pages/Settings";
+import Logs from "./Pages/Logs";
 
 import "./App.css";
 
 const App = () => {
-
   React.useEffect(() => {
-    const savedTheme = localStorage.getItem("app-theme") || "light";
-    document.documentElement.setAttribute("data-theme", savedTheme);
+    const loadConfig = () => {
+      const savedConfig = JSON.parse(localStorage.getItem("app-config")) || {
+        name: localStorage.getItem("app-name") || "Shah Agro",
+        theme: localStorage.getItem("app-theme") || "light"
+      };
+      document.documentElement.setAttribute("data-theme", savedConfig.theme);
+      document.title = savedConfig.name;
+    };
+
+    loadConfig();
+    // Listen for storage changes to update UI instantly across tabs if needed
+    window.addEventListener("storage", loadConfig);
+    return () => window.removeEventListener("storage", loadConfig);
   }, []);
 
   const location = useLocation();
@@ -113,8 +124,6 @@ const App = () => {
 
             <Route path="/purchase" element={<Purchase />} />
 
-            <Route path="/suppliers" element={<Suppliers />} />
-
             <Route path="/livestocks" element={<Livestocks />} />
 
             {/* ✅ SMART ALERTS */}
@@ -133,6 +142,8 @@ const App = () => {
 
             <Route path="/settings" element={<Settings />} />
 
+            <Route path="/logs" element={<Logs />} />
+
             {/* BLOCK LOGIN WHEN LOGGED IN */}
 
             <Route
@@ -150,6 +161,8 @@ const App = () => {
           </Routes>
 
         </div>
+
+        <Footer />
 
       </div>
 

@@ -26,7 +26,9 @@ const Fertilizers = () => {
     name: "",
     quantity: "",
     rate: "",
+    rate: "",
     supplier: "",
+    cellNo: "",
     expiry: "",
   });
 
@@ -96,17 +98,32 @@ const Fertilizers = () => {
         quantity: Number(formData.quantity),
         rate: Number(formData.rate),
         supplier: formData.supplier,
+        cellNo: formData.cellNo,
         expiry: formData.expiry,
       });
     } else {
       await addDoc(collection(db, "shops", shopId, "fertilizers"), {
         name: formData.name,
-        quantity: Number(formData.quantity),
+        quantity: 0, // Master holds 0
         rate: Number(formData.rate),
         supplier: formData.supplier,
+        cellNo: formData.cellNo,
         expiry: formData.expiry,
         createdAt: serverTimestamp(),
       });
+      
+      // Automatically log the purchase
+      if (Number(formData.quantity) > 0) {
+        await addDoc(collection(db, "shops", shopId, "purchases"), {
+          supplierName: formData.supplier || "Direct",
+          cellNo: formData.cellNo || "-",
+          itemName: formData.name,
+          quantity: Number(formData.quantity),
+          price: Number(formData.rate),
+          total: Number(formData.quantity) * Number(formData.rate),
+          createdAt: serverTimestamp(),
+        });
+      }
     }
     resetForm();
   };
@@ -124,6 +141,7 @@ const Fertilizers = () => {
       quantity: item.quantity,
       rate: item.rate,
       supplier: item.supplier,
+      cellNo: item.cellNo || "",
       expiry: item.expiry,
     });
     setShowModal(true);
@@ -132,7 +150,7 @@ const Fertilizers = () => {
   const resetForm = () => {
     setShowModal(false);
     setEditingItem(null);
-    setFormData({ name: "", quantity: "", rate: "", supplier: "", expiry: "" });
+    setFormData({ name: "", quantity: "", rate: "", supplier: "", cellNo: "", expiry: "" });
   };
 
   return (
@@ -208,7 +226,10 @@ const Fertilizers = () => {
                 <div className="form-group"><label>Initial Quantity</label><input className="form-input" type="number" placeholder="0" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: e.target.value })} /></div>
                 <div className="form-group"><label>Rate (PKR)</label><input className="form-input" type="number" placeholder="0" value={formData.rate} onChange={(e) => setFormData({ ...formData, rate: e.target.value })} /></div>
               </div>
-              <div className="form-group"><label>Supplier Source</label><input className="form-input" placeholder="Enter supplier name" value={formData.supplier} onChange={(e) => setFormData({ ...formData, supplier: e.target.value })} /></div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <div className="form-group"><label>Supplier Source</label><input className="form-input" placeholder="Enter supplier name" value={formData.supplier} onChange={(e) => setFormData({ ...formData, supplier: e.target.value })} /></div>
+                <div className="form-group"><label>Supplier Cell No</label><input className="form-input" placeholder="Enter cell no" value={formData.cellNo} onChange={(e) => setFormData({ ...formData, cellNo: e.target.value })} /></div>
+              </div>
               <div className="form-group"><label>Expiry Date</label><input className="form-input" type="date" value={formData.expiry} onChange={(e) => setFormData({ ...formData, expiry: e.target.value })} /></div>
               <div className="modal-footer">
                 <button type="submit" className="save-btn">{editingItem ? "Update Stock" : "Save Entry"}</button>

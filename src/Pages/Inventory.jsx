@@ -27,7 +27,9 @@ const Inventory = () => {
     type: "",
     quantity: "",
     rate: "",
+    rate: "",
     supplier: "",
+    cellNo: "",
     expiry: "",
   });
 
@@ -101,7 +103,9 @@ const Inventory = () => {
       type: "",
       quantity: "",
       rate: "",
+      rate: "",
       supplier: "",
+      cellNo: "",
       expiry: "",
     });
     setEditId(null);
@@ -116,6 +120,7 @@ const Inventory = () => {
       quantity: Number(formData.quantity),
       rate: Number(formData.rate),
       supplier: formData.supplier,
+      cellNo: formData.cellNo,
       expiry: formData.expiry,
       updatedAt: serverTimestamp(),
     };
@@ -126,8 +131,22 @@ const Inventory = () => {
       } else {
         await addDoc(collection(db, "shops", shopId, "inventory"), {
           ...payload,
+          quantity: 0, // Master holds 0
           createdAt: serverTimestamp(),
         });
+        
+        // Automatically log the purchase
+        if (Number(formData.quantity) > 0) {
+          await addDoc(collection(db, "shops", shopId, "purchases"), {
+            supplierName: formData.supplier || "Direct",
+            cellNo: formData.cellNo || "-",
+            itemName: formData.name,
+            quantity: Number(formData.quantity),
+            price: Number(formData.rate),
+            total: Number(formData.quantity) * Number(formData.rate),
+            createdAt: serverTimestamp(),
+          });
+        }
       }
       resetForm();
       setShowModal(false);
@@ -144,6 +163,7 @@ const Inventory = () => {
       quantity: item.quantity || "",
       rate: item.rate || "",
       supplier: item.supplier || "",
+      cellNo: item.cellNo || "",
       expiry: item.expiry || "",
     });
     setEditId(item.id);
@@ -294,12 +314,20 @@ const Inventory = () => {
                   onChange={(e) => setFormData({ ...formData, rate: e.target.value })}
                 />
               </div>
-              <input
-                className="form-input"
-                placeholder="Supplier Company"
-                value={formData.supplier}
-                onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
-              />
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <input
+                  className="form-input"
+                  placeholder="Supplier Company"
+                  value={formData.supplier}
+                  onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
+                />
+                <input
+                  className="form-input"
+                  placeholder="Supplier Cell No"
+                  value={formData.cellNo}
+                  onChange={(e) => setFormData({ ...formData, cellNo: e.target.value })}
+                />
+              </div>
               <div className="form-group">
                 <label style={{ fontSize: "12px", color: "var(--text-secondary)", marginBottom: "4px", display: "block" }}>Expiry Date</label>
                 <input

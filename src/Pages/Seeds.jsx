@@ -9,6 +9,7 @@ import {
   onSnapshot,
   query,
   orderBy,
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -28,7 +29,9 @@ const Seeds = () => {
     variety: "",
     quantity: "",
     rate: "",
+    rate: "",
     supplier: "",
+    cellNo: "",
     expiry: "",
   });
 
@@ -89,9 +92,22 @@ const Seeds = () => {
       await updateDoc(doc(db, "shops", shopId, "seeds", editId), payload);
       setEditId(null);
     } else {
-      await addDoc(collection(db, "shops", shopId, "seeds"), payload);
+      await addDoc(collection(db, "shops", shopId, "seeds"), { ...payload, quantity: 0 }); // Master holds 0
+      
+      // Automatically log the purchase
+      if (Number(formData.quantity) > 0) {
+        await addDoc(collection(db, "shops", shopId, "purchases"), {
+          supplierName: formData.supplier || "Direct",
+          cellNo: formData.cellNo || "-",
+          itemName: formData.name,
+          quantity: Number(formData.quantity),
+          price: Number(formData.rate),
+          total: Number(formData.quantity) * Number(formData.rate),
+          createdAt: serverTimestamp(), // Make sure serverTimestamp is imported if not already
+        });
+      }
     }
-    setFormData({ name: "", variety: "", quantity: "", rate: "", supplier: "", expiry: "" });
+    setFormData({ name: "", variety: "", quantity: "", rate: "", supplier: "", cellNo: "", expiry: "" });
     setPopupOpen(false);
   };
 
@@ -179,7 +195,10 @@ const Seeds = () => {
                 <div className="form-group"><label>Quantity</label><input className="form-input" type="number" placeholder="0" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: e.target.value })} /></div>
                 <div className="form-group"><label>Unit Rate (PKR)</label><input className="form-input" type="number" placeholder="0" value={formData.rate} onChange={(e) => setFormData({ ...formData, rate: e.target.value })} /></div>
               </div>
-              <div className="form-group"><label>Supplier Source</label><input className="form-input" placeholder="Enter supplier name" value={formData.supplier} onChange={(e) => setFormData({ ...formData, supplier: e.target.value })} /></div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                <div className="form-group"><label>Supplier Source</label><input className="form-input" placeholder="Enter supplier name" value={formData.supplier} onChange={(e) => setFormData({ ...formData, supplier: e.target.value })} /></div>
+                <div className="form-group"><label>Supplier Cell No</label><input className="form-input" placeholder="Enter cell no" value={formData.cellNo} onChange={(e) => setFormData({ ...formData, cellNo: e.target.value })} /></div>
+              </div>
               <div className="form-group"><label>Expiry Date</label><input className="form-input" type="date" value={formData.expiry} onChange={(e) => setFormData({ ...formData, expiry: e.target.value })} /></div>
               <div className="modal-footer"><button className="btn-save" onClick={handleAddOrUpdate}>{editId ? "Update Stock" : "Save Entry"}</button><button className="btn-cancel" onClick={() => setPopupOpen(false)}>Cancel</button></div>
             </form>
