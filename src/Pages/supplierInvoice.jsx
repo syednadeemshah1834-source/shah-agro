@@ -92,5 +92,13 @@ export const generateSupplierInvoice = (sup) => {
   doc.text("Powered by Virtual Tech Solution", 105, finalY + 42, { align: "center" });
 
   doc.autoPrint();
-  window.open(doc.output('bloburl'), '_blank');
+  const blobUrl = doc.output('bloburl');
+  let iframe = document.getElementById('print-iframe');
+  if (!iframe) {
+    iframe = document.createElement('iframe');
+    iframe.id = 'print-iframe';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+  }
+  iframe.src = blobUrl;
 };

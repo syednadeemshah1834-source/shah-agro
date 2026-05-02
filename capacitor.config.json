@@ -1,0 +1,8 @@
+{
+  "appId": "com.shahagro.app",
+  "appName": "Shah Agro",
+  "webDir": "build",
+  "server": {
+    "androidScheme": "https"
+  }
+}
