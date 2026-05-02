@@ -16,23 +16,31 @@
 .edit-btn {
   color: var(--accent-secondary);
   background: #eff6ff;
-  padding: 8px 14px;
+  padding: 12px 18px;
   border-radius: var(--radius-sm);
   border: none;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
+  flex: 1;
 }
 
 .delete-btn {
   color: #ef4444;
   background: #fef2f2;
-  padding: 8px 14px;
+  padding: 12px 18px;
   border-radius: var(--radius-sm);
   border: none;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
+  flex: 1;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  min-width: 160px;
 }
 
 .save-btn {

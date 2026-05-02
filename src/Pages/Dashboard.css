@@ -28,26 +28,34 @@
 
 .month-selector {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   gap: 8px;
   margin-bottom: 32px;
   background: var(--bg-secondary);
-  padding: 8px;
+  padding: 10px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
-  width: fit-content;
+  width: 100%;
+}
+
+.month-selector::-webkit-scrollbar {
+  display: none;
 }
 
 .month-selector button {
-  padding: 8px 16px;
+  padding: 8px 18px;
   border-radius: var(--radius-md);
   border: none;
-  background: transparent;
+  background: var(--bg-primary);
   color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .month-selector button:hover {
@@ -124,8 +132,8 @@
 
 .dashboard-charts {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-  gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
 }
 
 .chart-card {
@@ -210,6 +218,14 @@
 @media (max-width: 768px) {
   .dashboard-charts {
     grid-template-columns: 1fr;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 26px;
+  }
+  
+  .chart-card {
+    padding: 20px;
   }
 }
 

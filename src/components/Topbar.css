@@ -96,5 +96,10 @@
 
 @media (max-width: 640px) {
   .topbar-left h3 { display: none; }
-  .topbar { padding: 0 20px; }
+  .topbar { 
+    padding: 0 12px 0 64px; /* Space for hamburger */
+  }
+  .user-details { display: none; }
+  .user-profile { padding: 4px; }
+  .topbar-right { gap: 10px; }
 }

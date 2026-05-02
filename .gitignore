@@ -3,3 +3,6 @@ build/
 firebase-debug.log
 .env
 .DS_Store
+*.apk
+*.aab
+native-app/node_modules/

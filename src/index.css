@@ -65,7 +65,10 @@ body {
   user-select: none; /* Disable text selection for a native feel */
   touch-action: manipulation;
   overflow-x: hidden;
-  padding-top: env(safe-area-inset-top); /* Handle phone notches */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 /* Hide scrollbars for a clean native look */
@@ -133,10 +136,11 @@ a {
     -webkit-overflow-scrolling: touch;
     border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
+    margin-bottom: 16px;
   }
 
   table {
-    min-width: 600px; /* Force scroll on small screens */
+    min-width: 800px; /* Increased to ensure enough space for columns */
   }
 
   .modal {
@@ -144,25 +148,34 @@ a {
     max-width: 95% !important;
     padding: 20px !important;
     margin: 10px !important;
+    max-height: 85vh !important;
   }
 
   .page-header {
     flex-direction: column;
-    align-items: flex-start !important;
-    gap: 16px;
-    margin-top: 40px; /* Make room for hamburger */
+    align-items: stretch !important;
+    gap: 12px;
+    margin-top: 40px;
+    margin-bottom: 24px;
+  }
+
+  .page-header h2 {
+    font-size: 24px !important;
   }
 
   .page-header .btn {
     width: 100%;
+    padding: 14px; /* Larger touch target */
   }
 
-  .search-container {
-    flex-direction: column;
+  .search-container, .top-bar {
+    flex-direction: column !important;
+    gap: 12px !important;
   }
 
-  .search-input {
+  .search-input, .category-select {
     width: 100% !important;
+    margin: 0 !important;
   }
 }
 

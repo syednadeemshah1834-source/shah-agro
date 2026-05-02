@@ -183,6 +183,27 @@
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
+@media (max-width: 768px) {
+  .settings-card {
+    padding: 24px;
+  }
+  
+  .save-settings-btn {
+    align-self: stretch;
+    text-align: center;
+  }
+  
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .theme-btn {
+    flex: 1;
+    min-width: 100%;
+    justify-content: center;
+  }
+}
+
 .theme-btn:hover {
   transform: scale(1.02);
   box-shadow: var(--shadow-md);
