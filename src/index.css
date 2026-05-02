@@ -61,6 +61,20 @@ body {
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent; /* Remove blue highlight on tap */
+  user-select: none; /* Disable text selection for a native feel */
+  touch-action: manipulation;
+  overflow-x: hidden;
+  padding-top: env(safe-area-inset-top); /* Handle phone notches */
+}
+
+/* Hide scrollbars for a clean native look */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Base link styles */
@@ -91,6 +105,13 @@ a {
 .btn-primary:hover {
   filter: brightness(1.1);
   transform: translateY(-1px);
+}
+
+.btn:active, 
+.action-btns button:active,
+.sidebar-nav a:active {
+  transform: scale(0.96) !important; /* Native-style button press feedback */
+  filter: brightness(0.9);
 }
 
 /* --- MOBILE RESPONSIVENESS UTILITIES --- */

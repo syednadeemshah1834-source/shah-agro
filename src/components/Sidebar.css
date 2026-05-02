@@ -121,7 +121,13 @@
 }
 
 @media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); width: var(--sidebar-width); z-index: 200; }
+  .sidebar { 
+    transform: translateX(-100%); 
+    width: 280px; /* Standard Android drawer width */
+    z-index: 2000; 
+    box-shadow: 10px 0 30px rgba(0,0,0,0.3); /* Stronger drawer shadow */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
   .sidebar.mobile-active { transform: translateX(0); }
   .sidebar-title, .nav-label { display: block; }
 }
@@ -132,18 +138,23 @@
   position: fixed;
   top: 14px;
   left: 14px;
-  z-index: 300;
+  z-index: 3000;
   background: var(--accent-secondary);
   color: white;
   border: none;
-  border-radius: 10px;
-  width: 44px;
-  height: 44px;
-  font-size: 20px;
+  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.hamburger-btn:active {
+  transform: scale(0.9);
 }
 
 /* Overlay */
