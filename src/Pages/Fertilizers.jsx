@@ -26,7 +26,6 @@ const Fertilizers = () => {
     name: "",
     quantity: "",
     rate: "",
-    rate: "",
     supplier: "",
     cellNo: "",
     expiry: "",
