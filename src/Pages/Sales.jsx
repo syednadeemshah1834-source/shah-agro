@@ -339,7 +339,7 @@ const Sales = () => {
           <div className="modal">
             <h3>{editId ? "Edit Sale" : "New Sale Entry"}</h3>
             
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+            <div className="grid-2-col">
               <div className="form-group">
                 <label>Customer Name</label>
                 <input
@@ -378,7 +378,7 @@ const Sales = () => {
               </select>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+            <div className="grid-2-col">
               <div className="form-group">
                 <label>Quantity</label>
                 <input
@@ -404,7 +404,7 @@ const Sales = () => {
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginTop: "16px" }}>
+            <div className="grid-2-col" style={{ marginTop: "16px" }}>
               <div className="form-group">
                 <label style={{ color: "var(--accent-primary)", fontWeight: 600 }}>Amount Paid</label>
                 <input

@@ -190,11 +190,11 @@ const Seeds = () => {
             <form onSubmit={(e) => e.preventDefault()}>
               <div className="form-group"><label>Seed Name</label><input className="form-input" placeholder="e.g. Hybrid Corn" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} /></div>
               <div className="form-group"><label>Variety</label><input className="form-input" placeholder="e.g. XL-101" value={formData.variety} onChange={(e) => setFormData({ ...formData, variety: e.target.value })} /></div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="grid-2-col">
                 <div className="form-group"><label>Quantity</label><input className="form-input" type="number" placeholder="0" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: e.target.value })} /></div>
                 <div className="form-group"><label>Unit Rate (PKR)</label><input className="form-input" type="number" placeholder="0" value={formData.rate} onChange={(e) => setFormData({ ...formData, rate: e.target.value })} /></div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="grid-2-col">
                 <div className="form-group"><label>Supplier Source</label><input className="form-input" placeholder="Enter supplier name" value={formData.supplier} onChange={(e) => setFormData({ ...formData, supplier: e.target.value })} /></div>
                 <div className="form-group"><label>Supplier Cell No</label><input className="form-input" placeholder="Enter cell no" value={formData.cellNo} onChange={(e) => setFormData({ ...formData, cellNo: e.target.value })} /></div>
               </div>

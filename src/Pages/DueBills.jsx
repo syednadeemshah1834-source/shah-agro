@@ -220,7 +220,7 @@ const DueBills = () => {
               onChange={(e) => setFormData({ ...formData, items: e.target.value })}
             />
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+            <div className="grid-2-col">
               <div className="form-group">
                 <label style={{ fontSize: "12px", color: "var(--text-secondary)", marginBottom: "4px", display: "block" }}>Total Bill Amount</label>
                 <input

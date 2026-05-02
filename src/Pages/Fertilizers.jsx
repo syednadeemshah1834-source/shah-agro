@@ -221,11 +221,11 @@ const Fertilizers = () => {
             <h3>{editingItem ? "Update Fertilizer Entry" : "Record New Fertilizer Stock"}</h3>
             <form onSubmit={handleSubmit}>
               <div className="form-group"><label>Product Name</label><input className="form-input" placeholder="e.g. Urea 50kg" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} /></div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="grid-2-col">
                 <div className="form-group"><label>Initial Quantity</label><input className="form-input" type="number" placeholder="0" value={formData.quantity} onChange={(e) => setFormData({ ...formData, quantity: e.target.value })} /></div>
                 <div className="form-group"><label>Rate (PKR)</label><input className="form-input" type="number" placeholder="0" value={formData.rate} onChange={(e) => setFormData({ ...formData, rate: e.target.value })} /></div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="grid-2-col">
                 <div className="form-group"><label>Supplier Source</label><input className="form-input" placeholder="Enter supplier name" value={formData.supplier} onChange={(e) => setFormData({ ...formData, supplier: e.target.value })} /></div>
                 <div className="form-group"><label>Supplier Cell No</label><input className="form-input" placeholder="Enter cell no" value={formData.cellNo} onChange={(e) => setFormData({ ...formData, cellNo: e.target.value })} /></div>
               </div>

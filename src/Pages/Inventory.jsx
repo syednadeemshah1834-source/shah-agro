@@ -296,7 +296,7 @@ const Inventory = () => {
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
               />
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="grid-2-col">
                 <input
                   className="form-input"
                   type="number"
@@ -312,7 +312,7 @@ const Inventory = () => {
                   onChange={(e) => setFormData({ ...formData, rate: e.target.value })}
                 />
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+              <div className="grid-2-col">
                 <input
                   className="form-input"
                   placeholder="Supplier Company"
