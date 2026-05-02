@@ -168,8 +168,9 @@ const Fertilizers = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
-      <div className="table-container">
-        {loading ? (
+      <div className="table-wrapper">
+        <div className="table-container">
+        {filtered.length === 0 ? (
           <div style={{ padding: "40px", textAlign: "center", color: "var(--text-secondary)" }}>Loading stock data...</div>
         ) : (
           <table>
@@ -214,6 +215,7 @@ const Fertilizers = () => {
             </tfoot>
           </table>
         )}
+      </div>
       </div>
       {showModal && (
         <div className="modal-overlay">

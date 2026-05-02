@@ -1,127 +1,14 @@
-.page-header {
-  margin-bottom: 32px;
-}
-
-.page-title {
-  font-size: 32px;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: -1.5px;
-}
-
-.top-bar {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 32px;
-  align-items: center;
-}
-
-.search-input {
-  flex: 1;
-  max-width: 320px;
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  background-color: var(--bg-secondary);
-  font-size: 14px;
-  font-weight: 500;
-  transition: all var(--transition-fast);
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: var(--accent-secondary);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-}
-
-.category-select {
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  background-color: var(--bg-secondary);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.category-select:focus {
-  outline: none;
-  border-color: var(--accent-secondary);
-}
-
-.total-inventory {
-  background: var(--bg-secondary);
-  padding: 32px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 32px;
-}
-
-.total-inventory h3 {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.total-inventory h2 {
-  font-size: 32px;
-  font-weight: 800;
-  color: var(--accent-primary);
-  letter-spacing: -1px;
-}
-
-/* ================= TABLES ================= */
-
-.table-container {
-  background: var(--bg-secondary);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th {
-  background: #f8fafc;
-  padding: 16px 24px;
-  text-align: left;
-  font-weight: 700;
-  color: var(--text-secondary);
-  border-bottom: 2px solid var(--border-color);
-  text-transform: uppercase;
+/* Specific styles only for Inventory.jsx */
+.item-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
   font-size: 11px;
-  letter-spacing: 0.05em;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: var(--text-secondary);
 }
 
-td {
-  padding: 18px 24px;
-  color: var(--text-primary);
-  border-bottom: 1px solid var(--border-color);
-  font-size: 14px;
-  font-weight: 500;
-}
-
-tr:last-child td {
-  border-bottom: none;
-}
-
-tr:hover td {
-  background-color: #f8fafc;
-}
-
-.action-buttons {
+.action-btns {
   display: flex;
   gap: 8px;
 }
@@ -135,12 +22,6 @@ tr:hover td {
   font-weight: 700;
   font-size: 12px;
   cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.edit-btn:hover {
-  background: var(--accent-secondary);
-  color: white;
 }
 
 .delete-btn {
@@ -152,77 +33,6 @@ tr:hover td {
   font-weight: 700;
   font-size: 12px;
   cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.delete-btn:hover {
-  background: #ef4444;
-  color: white;
-}
-
-/* ================= MODAL ================= */
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.4);
-  backdrop-filter: blur(8px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal {
-  background: var(--bg-secondary);
-  border-radius: var(--radius-lg);
-  width: 100%;
-  max-width: 500px;
-  padding: 32px;
-  box-shadow: var(--shadow-lg);
-  animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@keyframes modalIn {
-  from { opacity: 0; transform: translateY(10px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.modal h3 {
-  font-size: 22px;
-  font-weight: 800;
-  margin-bottom: 24px;
-  color: var(--text-primary);
-  letter-spacing: -0.5px;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-}
-
-.form-grid input {
-  padding: 12px 16px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  background-color: #f8fafc;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all var(--transition-fast);
-}
-
-.form-grid input:focus {
-  outline: none;
-  border-color: var(--accent-secondary);
-  background: white;
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-}
-
-.modal-buttons {
-  display: flex;
-  gap: 12px;
-  margin-top: 32px;
 }
 
 .save-btn {
@@ -234,12 +44,6 @@ tr:hover td {
   border-radius: var(--radius-md);
   font-weight: 700;
   cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.save-btn:hover {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
 }
 
 .cancel-btn {
@@ -251,9 +55,4 @@ tr:hover td {
   border-radius: var(--radius-md);
   font-weight: 700;
   cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.cancel-btn:hover {
-  background-color: #e2e8f0;
 }

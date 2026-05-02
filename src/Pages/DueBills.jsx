@@ -154,7 +154,8 @@ const DueBills = () => {
         <h2>PKR {formatCurrency(totalOutstanding)}</h2>
       </div>
 
-      <div className="table-container">
+      <div className="table-wrapper">
+        <div className="table-container">
         {loading ? (
           <div style={{ padding: "40px", textAlign: "center", color: "var(--text-secondary)" }}>Loading receivables data...</div>
         ) : (
@@ -194,6 +195,7 @@ const DueBills = () => {
             </tbody>
           </table>
         )}
+      </div>
       </div>
 
       {modalOpen && (

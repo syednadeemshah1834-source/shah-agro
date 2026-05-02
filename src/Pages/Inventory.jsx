@@ -223,7 +223,8 @@ const Inventory = () => {
         </select>
       </div>
 
-      <div className="table-container">
+      <div className="table-wrapper">
+        <div className="table-container">
         {loading ? (
           <div style={{ padding: "40px", textAlign: "center", color: "var(--text-secondary)" }}>Loading inventory data...</div>
         ) : (
@@ -277,6 +278,7 @@ const Inventory = () => {
             </div>
           </>
         )}
+      </div>
       </div>
 
       {showModal && (

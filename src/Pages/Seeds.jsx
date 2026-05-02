@@ -151,12 +151,13 @@ const Seeds = () => {
         <h2>Seeds Inventory Management</h2>
         <button className="btn btn-primary" onClick={() => setPopupOpen(true)}>Add New Seed Stock</button>
       </div>
-      <div className="inventory-stats">
+      <div className="stats-grid">
         <div className="stat-card"><h3>Total Seeds Value</h3><div className="value">PKR {totalSeedValue?.toLocaleString()}</div></div>
         <div className="stat-card"><h3>Unique Products</h3><div className="value">{seedItems?.length}</div></div>
       </div>
       <div className="search-bar-container"><input type="text" className="search-input" placeholder="Filter seeds, variety or supplier..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} /></div>
-      <div className="table-container">
+      <div className="table-wrapper">
+        <div className="table-container">
         <table>
           <thead>
             <tr><th>Seed Product</th><th>Variety</th><th>Available Stock</th><th>Unit Rate</th><th>Total Value</th><th>Supplier</th><th>Expiry Date</th><th>Actions</th></tr>
@@ -182,6 +183,7 @@ const Seeds = () => {
             })}
           </tbody>
         </table>
+      </div>
       </div>
       {popupOpen && (
         <div className="modal-overlay">

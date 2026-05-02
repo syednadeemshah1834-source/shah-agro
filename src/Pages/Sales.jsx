@@ -297,7 +297,8 @@ const Sales = () => {
         />
       </div>
 
-      <div className="table-container">
+      <div className="table-wrapper">
+        <div className="table-container">
         <table>
           <thead>
             <tr>
@@ -332,6 +333,7 @@ const Sales = () => {
             </tr>
           </tbody>
         </table>
+      </div>
       </div>
 
       {showModal && (
