@@ -29,7 +29,6 @@ const Seeds = () => {
     variety: "",
     quantity: "",
     rate: "",
-    rate: "",
     supplier: "",
     cellNo: "",
     expiry: "",
