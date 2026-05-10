@@ -247,20 +247,20 @@ const Inventory = () => {
                   const liveQty = liveInventory[item.name] || 0;
                   return (
                     <tr key={item.id}>
-                      <td style={{ fontWeight: 600 }}>{item.name}</td>
-                      <td>
+                      <td data-label="Product" style={{ fontWeight: 600 }}>{item.name}</td>
+                      <td data-label="Category">
                         <span style={{ padding: "4px 10px", borderRadius: "20px", background: "#f1f5f9", fontSize: "11px", fontWeight: 600, color: "var(--text-secondary)" }}>
                           {item.type || "General"}
                         </span>
                       </td>
-                      <td style={{ color: liveQty < 5 ? "#ef4444" : "inherit", fontWeight: liveQty < 5 ? 700 : 500 }}>
+                      <td data-label="In Stock" style={{ color: liveQty < 5 ? "#ef4444" : "inherit", fontWeight: liveQty < 5 ? 700 : 500 }}>
                         {liveQty}
                       </td>
-                      <td>PKR {formatCurrency(item.rate)}</td>
-                      <td style={{ fontWeight: 600 }}>PKR {formatCurrency(liveQty * item.rate)}</td>
-                      <td>{item.supplier || "N/A"}</td>
-                      <td>{item.expiry || "N/A"}</td>
-                      <td>
+                      <td data-label="Unit Rate">PKR {formatCurrency(item.rate)}</td>
+                      <td data-label="Stock Value" style={{ fontWeight: 600 }}>PKR {formatCurrency(liveQty * item.rate)}</td>
+                      <td data-label="Supplier">{item.supplier || "N/A"}</td>
+                      <td data-label="Expiry">{item.expiry || "N/A"}</td>
+                      <td data-label="Action">
                         <div className="action-buttons">
                           <button className="edit-btn" onClick={() => handleEdit(item)}>Edit</button>
                           <button className="delete-btn" onClick={() => handleDelete(item.id)}>Delete</button>

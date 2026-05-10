@@ -313,12 +313,12 @@ const Sales = () => {
           <tbody>
             {filteredSales.map((sale) => (
               <tr key={sale.id}>
-                <td style={{ fontWeight: 500 }}>{sale.customerName}</td>
-                <td>{sale.itemName}</td>
-                <td>{sale.quantity}</td>
-                <td>PKR {sale.pricePerItem?.toLocaleString()}</td>
-                <td style={{ fontWeight: 600 }}>PKR {sale.totalAmount?.toLocaleString()}</td>
-                <td>
+                <td data-label="Customer" style={{ fontWeight: 500 }}>{sale.customerName}</td>
+                <td data-label="Item">{sale.itemName}</td>
+                <td data-label="Qty">{sale.quantity}</td>
+                <td data-label="Price">PKR {sale.pricePerItem?.toLocaleString()}</td>
+                <td data-label="Total" style={{ fontWeight: 600 }}>PKR {sale.totalAmount?.toLocaleString()}</td>
+                <td data-label="Action">
                   <div className="action-btns">
                     <button className="btn print-btn" onClick={() => generateInvoice(sale)}>Print</button>
                     <button className="btn edit-btn" onClick={() => handleEdit(sale)}>Edit</button>

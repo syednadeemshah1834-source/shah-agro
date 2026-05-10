@@ -174,17 +174,17 @@ const DueBills = () => {
             <tbody>
               {filteredBills.map((bill) => (
                 <tr key={bill.id}>
-                  <td style={{ fontWeight: 600 }}>{bill.customerName}</td>
-                  <td>{bill.phone}</td>
-                  <td style={{ fontWeight: 500 }}>PKR {formatCurrency(bill.totalAmount)}</td>
-                  <td style={{ color: "var(--accent-primary)" }}>PKR {formatCurrency(bill.paidAmount)}</td>
-                  <td style={{ color: "#ef4444", fontWeight: 700 }}>PKR {formatCurrency(bill.remainingAmount)}</td>
-                  <td>
+                  <td data-label="Customer" style={{ fontWeight: 600 }}>{bill.customerName}</td>
+                  <td data-label="Cell No">{bill.phone}</td>
+                  <td data-label="Total Bill" style={{ fontWeight: 500 }}>PKR {formatCurrency(bill.totalAmount)}</td>
+                  <td data-label="Paid" style={{ color: "var(--accent-primary)" }}>PKR {formatCurrency(bill.paidAmount)}</td>
+                  <td data-label="Remaining" style={{ color: "#ef4444", fontWeight: 700 }}>PKR {formatCurrency(bill.remainingAmount)}</td>
+                  <td data-label="Status">
                     <span className={`status-badge status-${bill.status}`}>
                       {bill.status}
                     </span>
                   </td>
-                  <td>
+                  <td data-label="Action">
                     <div className="action-btns">
                       <button className="edit-btn" onClick={() => handleEdit(bill)}>Edit</button>
                       <button className="delete-btn" onClick={() => handleDelete(bill.id)}>Delete</button>

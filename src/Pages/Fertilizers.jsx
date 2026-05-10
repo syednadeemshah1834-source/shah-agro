@@ -193,13 +193,13 @@ const Fertilizers = () => {
                 const totalValue = itemValue(item.name, item.rate);
                 return (
                   <tr key={item.id}>
-                    <td style={{ fontWeight: 600 }}>{item.name}</td>
-                    <td className="stock-value">{stock}</td>
-                    <td className="price-value">PKR {item.rate?.toLocaleString()}</td>
-                    <td style={{ fontWeight: 700, color: "var(--accent-primary)" }}>PKR {totalValue.toLocaleString()}</td>
-                    <td style={{ color: "var(--text-secondary)", fontSize: "13px" }}>{item.supplier}</td>
-                    <td style={{ fontSize: "13px" }}>{item.expiry}</td>
-                    <td>
+                    <td data-label="Product" style={{ fontWeight: 600 }}>{item.name}</td>
+                    <td data-label="Stock" className="stock-value">{stock}</td>
+                    <td data-label="Rate" className="price-value">PKR {item.rate?.toLocaleString()}</td>
+                    <td data-label="Total Value" style={{ fontWeight: 700, color: "var(--accent-primary)" }}>PKR {totalValue.toLocaleString()}</td>
+                    <td data-label="Supplier" style={{ color: "var(--text-secondary)", fontSize: "13px" }}>{item.supplier}</td>
+                    <td data-label="Expiry" style={{ fontSize: "13px" }}>{item.expiry}</td>
+                    <td data-label="Action">
                       <div className="action-btns">
                         <button className="edit-btn" onClick={() => handleEdit(item)}>Edit</button>
                         <button className="delete-btn" onClick={() => handleDelete(item.id)}>Delete</button>

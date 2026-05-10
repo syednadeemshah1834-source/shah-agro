@@ -364,19 +364,69 @@ td {
     padding: 14px !important;
   }
 
-  .action-btns {
-    flex-direction: column;
-    gap: 4px !important;
-    min-width: unset !important;
+  /* --- POWERFUL TABLE-TO-CARD TRANSFORMATION --- */
+  .table-container {
+    border: none !important;
+    background: transparent !important;
+    overflow-x: visible !important;
   }
 
-  .action-btns button, .action-buttons button {
-    padding: 8px 12px !important;
-    font-size: 12px !important;
-    width: 100%;
+  table, thead, tbody, th, td, tr {
+    display: block !important;
+    width: 100% !important;
   }
 
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  tr {
+    background: var(--bg-secondary) !important;
+    border-radius: var(--radius-lg) !important;
+    padding: 16px !important;
+    margin-bottom: 16px !important;
+    box-shadow: var(--shadow-sm) !important;
+    border: 1px solid var(--border-color) !important;
+  }
+
+  td {
+    border: none !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    position: relative !important;
+    padding: 12px 0 12px 45% !important;
+    text-align: right !important;
+    font-size: 14px !important;
+    min-height: 44px !important;
+  }
+
+  td:last-child {
+    border-bottom: 0 !important;
+    margin-top: 8px !important;
+  }
+
+  td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    width: 40%;
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: 700;
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  .action-btns, .action-buttons {
+    justify-content: flex-end !important;
+    margin-top: 8px !important;
+  }
+
+  /* Specific fix for print buttons in cards */
   .print-btn {
-    width: 100%;
+    margin-bottom: 8px;
   }
 }

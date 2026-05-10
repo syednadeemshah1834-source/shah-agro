@@ -212,13 +212,13 @@ const Purchase = () => {
           <tbody>
             {filteredPurchases.map((p) => (
               <tr key={p.id}>
-                <td style={{ fontWeight: 500 }}>{p.supplierName}</td>
-                <td>{p.cellNo}</td>
-                <td>{p.itemName}</td>
-                <td>{p.quantity}</td>
-                <td>PKR {p.price?.toLocaleString()}</td>
-                <td className="highlight">PKR {p.total.toLocaleString()}</td>
-                <td>
+                <td data-label="Supplier" style={{ fontWeight: 500 }}>{p.supplierName}</td>
+                <td data-label="Cell No">{p.cellNo}</td>
+                <td data-label="Item">{p.itemName}</td>
+                <td data-label="Qty">{p.quantity}</td>
+                <td data-label="Price">PKR {p.price?.toLocaleString()}</td>
+                <td data-label="Total" className="highlight">PKR {p.total.toLocaleString()}</td>
+                <td data-label="Actions">
                     <div className="action-btns">
                       <button className="print-btn" onClick={() => generatePurchaseInvoice(p)}>Print</button>
                       <button className="edit-btn" onClick={() => handleEdit(p)}>Edit</button>

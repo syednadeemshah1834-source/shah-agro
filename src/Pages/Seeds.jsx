@@ -170,14 +170,14 @@ const Seeds = () => {
               const expiryClass = getExpiryClass(item.expiry);
               return (
                 <tr key={item.id}>
-                  <td style={{ fontWeight: 600 }}>{item.name} {isLow && <span className="low-stock-badge">Low</span>}</td>
-                  <td>{item.variety}</td>
-                  <td><div style={{ display: "flex", alignItems: "center", gap: "10px" }}><span style={{ minWidth: "30px" }}>{currentStock}</span><div className="progress-wrapper"><div className={`progress-fill ${isLow ? "low" : ""}`} style={{ width: `${progress}%` }} /></div></div></td>
-                  <td>PKR {Number(item.rate).toLocaleString()}</td>
-                  <td style={{ fontWeight: 500 }}>PKR {(currentStock * Number(item.rate)).toLocaleString()}</td>
-                  <td style={{ color: "var(--text-secondary)", fontSize: "13px" }}>{item.supplier}</td>
-                  <td className={expiryClass}>{item.expiry}</td>
-                  <td><div className="action-btns"><button className="edit-btn" onClick={() => handleEdit(item)}>Edit</button><button className="delete-btn" onClick={() => handleDelete(item.id)}>Delete</button></div></td>
+                  <td data-label="Seed Product" style={{ fontWeight: 600 }}>{item.name} {isLow && <span className="low-stock-badge">Low</span>}</td>
+                  <td data-label="Variety">{item.variety}</td>
+                  <td data-label="Stock"><div style={{ display: "flex", alignItems: "center", gap: "10px" }}><span style={{ minWidth: "30px" }}>{currentStock}</span><div className="progress-wrapper"><div className={`progress-fill ${isLow ? "low" : ""}`} style={{ width: `${progress}%` }} /></div></div></td>
+                  <td data-label="Rate">PKR {Number(item.rate).toLocaleString()}</td>
+                  <td data-label="Total Value" style={{ fontWeight: 500 }}>PKR {(currentStock * Number(item.rate)).toLocaleString()}</td>
+                  <td data-label="Supplier" style={{ color: "var(--text-secondary)", fontSize: "13px" }}>{item.supplier}</td>
+                  <td data-label="Expiry" className={expiryClass}>{item.expiry}</td>
+                  <td data-label="Actions"><div className="action-btns"><button className="edit-btn" onClick={() => handleEdit(item)}>Edit</button><button className="delete-btn" onClick={() => handleDelete(item.id)}>Delete</button></div></td>
                 </tr>
               );
             })}
