@@ -43,24 +43,17 @@
   min-width: 160px;
 }
 
-.save-btn {
-  flex: 1;
-  background-color: var(--accent-secondary);
-  color: white;
-  border: none;
-  padding: 14px;
-  border-radius: var(--radius-md);
-  font-weight: 700;
-  cursor: pointer;
-}
+@media (max-width: 768px) {
+  .total-inventory {
+    padding: 20px !important;
+  }
 
-.cancel-btn {
-  flex: 1;
-  background-color: #f1f5f9;
-  color: var(--text-primary);
-  border: none;
-  padding: 14px;
-  border-radius: var(--radius-md);
-  font-weight: 700;
-  cursor: pointer;
+  .total-inventory h2 {
+    font-size: 24px !important;
+  }
+
+  .top-bar {
+    flex-direction: column;
+    gap: 10px;
+  }
 }

@@ -86,43 +86,6 @@
   box-shadow: 0 6px 12px -1px rgba(239, 68, 68, 0.3);
 }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal {
-  background: var(--bg-primary);
-  padding: 32px;
-  border-radius: var(--radius-lg);
-  width: 90%;
-  max-width: 450px;
-  box-shadow: var(--shadow-lg);
-}
-
-.cancel-btn {
-  background: #e2e8f0;
-  color: #475569;
-  border: none;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.cancel-btn:hover {
-  background: #cbd5e1;
-}
-
 .loading {
   opacity: 0.7;
   cursor: wait;

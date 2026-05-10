@@ -128,6 +128,7 @@ a {
 @media (max-width: 768px) {
   .grid-2-col {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .table-container {
@@ -137,45 +138,50 @@ a {
     border-radius: var(--radius-md);
     border: 1px solid var(--border-color);
     margin-bottom: 16px;
+    background: var(--bg-secondary);
   }
 
+  /* Improved table responsiveness for mobile */
   table {
-    min-width: 800px; /* Increased to ensure enough space for columns */
+    min-width: 700px; /* Reduced from 800px to fit better */
+    table-layout: auto;
   }
 
-  .modal {
-    width: 95% !important;
-    max-width: 95% !important;
-    padding: 20px !important;
-    margin: 10px !important;
-    max-height: 85vh !important;
+  th, td {
+    padding: 12px 14px !important; /* Smaller padding on mobile */
+    font-size: 13px !important;
   }
+
 
   .page-header {
     flex-direction: column;
     align-items: stretch !important;
-    gap: 12px;
-    margin-top: 40px;
-    margin-bottom: 24px;
+    gap: 16px;
+    margin-top: 60px; /* More space for the hamburger menu */
+    margin-bottom: 20px;
   }
 
   .page-header h2 {
-    font-size: 24px !important;
+    font-size: 22px !important;
+    letter-spacing: -0.5px;
   }
 
   .page-header .btn {
     width: 100%;
-    padding: 14px; /* Larger touch target */
+    padding: 16px; /* Larger touch target */
+    font-size: 16px;
   }
 
   .search-container, .top-bar {
     flex-direction: column !important;
-    gap: 12px !important;
+    gap: 10px !important;
+    margin-bottom: 20px !important;
   }
 
-  .search-input, .category-select {
+  .search-input, .category-select, .search-btn {
     width: 100% !important;
     margin: 0 !important;
+    height: 48px; /* Standard mobile input height */
   }
 }
 
@@ -260,7 +266,7 @@ td {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
@@ -269,7 +275,7 @@ td {
   padding: 16px;
 }
 
-.modal {
+.modal, .popup {
   background: var(--bg-secondary);
   border-radius: var(--radius-lg);
   width: 100%;
@@ -278,23 +284,99 @@ td {
   overflow-y: auto;
   padding: 32px;
   box-shadow: var(--shadow-lg);
+  position: relative;
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal h3, .popup h2 {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.modal-footer, .modal-buttons, .popup-footer {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.modal-footer button, .modal-buttons button, .popup-footer button, 
+.save-btn, .cancel-btn, .btn-save, .btn-cancel {
+  flex: 1;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.save-btn, .btn-save, .btn-primary {
+  background-color: var(--accent-secondary);
+  color: white;
+}
+
+.cancel-btn, .btn-cancel, .btn-secondary {
+  background-color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 @media (max-width: 768px) {
   .page-header {
     flex-direction: column;
     align-items: stretch;
-    margin-top: 50px;
+    margin-top: 60px;
   }
   
-  .page-header h2 { font-size: 24px; }
+  .page-header h2 { font-size: 22px; }
 
   .stats-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
-  .modal {
-    padding: 24px;
-    max-height: 95vh;
+  .page-content {
+    padding: 16px 12px !important;
+  }
+
+  .modal, .popup {
+    padding: 24px 20px !important;
+    max-height: 95vh !important;
+    width: 95% !important;
+    max-width: 95% !important;
+  }
+
+  .modal-footer, .modal-buttons, .popup-footer {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .form-input, .category-select {
+    font-size: 16px !important; 
+    padding: 14px !important;
+  }
+
+  .action-btns {
+    flex-direction: column;
+    gap: 4px !important;
+    min-width: unset !important;
+  }
+
+  .action-btns button, .action-buttons button {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    width: 100%;
+  }
+
+  .print-btn {
+    width: 100%;
   }
 }

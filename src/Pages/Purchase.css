@@ -264,3 +264,26 @@ tr:hover td {
 }
 
 .delete-btn:hover { background: #ef4444; color: white; }
+@media (max-width: 768px) {
+  .search-input {
+    max-width: 100%;
+  }
+
+  .summary-card {
+    padding: 24px;
+  }
+
+  .summary-card span {
+    font-size: 26px;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .popup {
+    padding: 20px;
+    width: 95%;
+  }
+}
