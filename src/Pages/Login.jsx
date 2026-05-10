@@ -123,8 +123,8 @@ const Login = () => {
             </button>
           </form>
 
-          <p className="form-footer">
-            By signing in, you agree to our Terms of Service and Privacy Policy.
+          <p className="form-footer" style={{ fontSize: "11px", opacity: 0.6 }}>
+            v1.5.0 (Ultimate Mobile Update) • Terms & Privacy
           </p>
         </div>
       </div>
