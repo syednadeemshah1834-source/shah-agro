@@ -17,7 +17,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 23
           cache: 'npm'
 
       - name: Install Dependencies
@@ -29,6 +29,9 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
           cache: 'gradle'
+
+      - name: Check Node Version
+        run: node -v
 
       - name: Build Web Project
         run: CI=false npm run build
