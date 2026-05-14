@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { generatePurchaseInvoice } from "./purchaseInvoice";
+import { logActivity } from "../utils/logger";
 import "./Purchase.css";
 
 const Purchase = () => {
@@ -110,8 +111,10 @@ const Purchase = () => {
     try {
       if (editId) {
         await updateDoc(doc(db, "shops", shopId, "purchases", editId), payload);
+        await logActivity("Updated", "Purchases", `Updated purchase from ${supplierName}: ${qty}x ${itemName}`);
       } else {
         await addDoc(purchasesRef, payload);
+        await logActivity("Added", "Purchases", `New purchase added: ${qty}x ${itemName} from ${supplierName} (Total: ${total})`);
       }
       setPopupOpen(false);
       setEditId(null);
@@ -144,6 +147,7 @@ const Purchase = () => {
     if (!window.confirm("Delete this purchase?")) return;
     try {
       await deleteDoc(doc(db, "shops", shopId, "purchases", id));
+      await logActivity("Deleted", "Purchases", `Deleted a purchase record`);
     } catch (err) {
       console.error("Error deleting purchase:", err);
       alert("Offline: Deletion will sync automatically when back online.");

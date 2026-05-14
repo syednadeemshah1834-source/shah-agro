@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { collection, getDocs, query, where, addDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import { logActivity } from "../utils/logger";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
@@ -45,6 +46,7 @@ const Login = () => {
         alert("Login Successful ✅");
       }
       localStorage.setItem("user", JSON.stringify(userDoc));
+      await logActivity("Login", "Auth", `User ${gmail} logged in to ${userDoc.shopName}`);
       navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);

@@ -9,6 +9,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { logActivity } from "../utils/logger";
 import "./DueBills.css";
 
 const DueBills = () => {
@@ -69,17 +70,18 @@ const DueBills = () => {
           : "unpaid",
       updatedAt: serverTimestamp(),
     };
-
     if (editId) {
       await updateDoc(
         doc(db, "shops", shopId, "dueBills", editId),
         payload
       );
+      await logActivity("Updated", "Due Bills", `Updated bill for ${formData.customerName}: Remaining balance PKR ${remaining}`);
     } else {
       await addDoc(collection(db, "shops", shopId, "dueBills"), {
         ...payload,
         createdAt: serverTimestamp(),
       });
+      await logActivity("Added", "Due Bills", `New due bill for ${formData.customerName}: Total PKR ${total}`);
     }
 
     resetForm();
@@ -107,6 +109,7 @@ const DueBills = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this bill?")) return;
     await deleteDoc(doc(db, "shops", shopId, "dueBills", id));
+    await logActivity("Deleted", "Due Bills", `Deleted a due bill record`);
   };
 
   /* ================= SEARCH FILTER ================= */

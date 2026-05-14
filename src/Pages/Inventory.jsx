@@ -9,6 +9,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
+import { logActivity } from "../utils/logger";
 import "./Inventory.css";
 
 const Inventory = () => {
@@ -126,12 +127,14 @@ const Inventory = () => {
     try {
       if (editId) {
         await updateDoc(doc(db, "shops", shopId, "inventory", editId), payload);
+        await logActivity("Updated", "Inventory", `Updated item: ${formData.name}`);
       } else {
         await addDoc(collection(db, "shops", shopId, "inventory"), {
           ...payload,
           quantity: 0, // Master holds 0
           createdAt: serverTimestamp(),
         });
+        await logActivity("Added", "Inventory", `New item added: ${formData.name} (${formData.type})`);
         
         // Automatically log the purchase
         if (Number(formData.quantity) > 0) {
@@ -144,6 +147,7 @@ const Inventory = () => {
             total: Number(formData.quantity) * Number(formData.rate),
             createdAt: serverTimestamp(),
           });
+          await logActivity("Added", "Purchases", `Initial stock logged for ${formData.name}: ${formData.quantity} Units`);
         }
       }
       resetForm();
@@ -171,6 +175,7 @@ const Inventory = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure to delete this item?")) return;
     await deleteDoc(doc(db, "shops", shopId, "inventory", id));
+    await logActivity("Deleted", "Inventory", `Deleted an inventory record`);
   };
 
   const formatCurrency = (value) =>

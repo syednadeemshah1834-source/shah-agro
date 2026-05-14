@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../firebase";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 import "./Smartalerts.css";
 
 const shopId = "mainshop";
@@ -24,6 +26,7 @@ const Smartalerts = () => {
     condition: "--",
     monthlyAvg: "--"
   });
+  const [suppliers, setSuppliers] = useState([]);
 
   /* ================= FETCH ALL COLLECTIONS ================= */
   useEffect(() => {
@@ -47,12 +50,17 @@ const Smartalerts = () => {
       collection(db, "shops", shopId, "fertilizers"),
       snap => setFertilizers(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })))
     );
+    const unsubSuppliers = onSnapshot(
+      collection(db, "shops", shopId, "suppliers"),
+      snap => setSuppliers(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })))
+    );
     return () => {
       unsubPurchases();
       unsubSales();
       unsubInventory();
       unsubSeeds();
       unsubFertilizers();
+      unsubSuppliers();
     };
   }, []);
 
@@ -77,7 +85,8 @@ const Smartalerts = () => {
     const map = {};
     const addStock = (items) => {
       items.forEach(item => {
-        const name = item.itemName || item.name || "Unknown";
+        const name = item.itemName || item.name;
+        if (!name) return;
         const qty = Number(item.quantity || item.qty || 0);
         if (!map[name]) map[name] = 0;
         map[name] += qty;
@@ -85,7 +94,8 @@ const Smartalerts = () => {
     };
     const subtractStock = (items) => {
       items.forEach(item => {
-        const name = item.itemName || item.name || "Unknown";
+        const name = item.itemName || item.name;
+        if (!name) return;
         const qty = Number(item.quantity || item.qty || 0);
         if (!map[name]) map[name] = 0;
         map[name] -= qty;
@@ -113,6 +123,44 @@ const Smartalerts = () => {
     const days = (new Date(item.expiryDate) - new Date()) / (1000 * 60 * 60 * 24);
     return days <= 30;
   });
+
+  /* ================= RESTOCK RECOMMENDATIONS ================= */
+  const restockSuggestions = useMemo(() => {
+    return lowStockItems.map(([name, qty]) => {
+      const supplier = suppliers.find(s => s.itemName?.toLowerCase() === name.toLowerCase());
+      return {
+        name,
+        qty,
+        suggestedSupplier: supplier?.supplierName || "No previous supplier",
+        contact: supplier?.contact || "N/A"
+      };
+    });
+  }, [lowStockItems, suppliers]);
+
+  const downloadReorderSheet = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(20);
+    doc.text("Shah Agro - Smart Restock Sheet", 14, 22);
+    doc.setFontSize(11);
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 30);
+
+    const tableData = restockSuggestions.map(s => [
+      s.name,
+      s.qty,
+      s.suggestedSupplier,
+      s.contact
+    ]);
+
+    doc.autoTable({
+      startY: 40,
+      head: [["Item Name", "Current Qty", "Last Supplier", "Contact"]],
+      body: tableData,
+      theme: "grid",
+      headStyles: { fillColor: [59, 130, 246] }
+    });
+
+    doc.save(`Reorder_Sheet_${new Date().toISOString().split("T")[0]}.pdf`);
+  };
 
   return (
     <div className="page-wrapper">
@@ -194,6 +242,49 @@ const Smartalerts = () => {
               <span className="weather-value">{weather.monthlyAvg}°C</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div className="restock-section" style={{ marginTop: "32px", padding: "24px", backgroundColor: "white", borderRadius: "12px", border: "1px solid var(--border-color)" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+          <div>
+            <h3 style={{ margin: 0, fontSize: "1.25rem", color: "#1e293b" }}>💡 Smart Restock Recommendations</h3>
+            <p style={{ margin: "4px 0 0 0", fontSize: "0.9rem", color: "#64748b" }}>Items predicted to run out soon based on current inventory levels</p>
+          </div>
+          <button onClick={downloadReorderSheet} style={{
+            backgroundColor: "#3b82f6", color: "white", padding: "10px 18px", borderRadius: "8px", border: "none", fontWeight: "600", cursor: "pointer"
+          }}>
+            📋 Download Reorder Sheet
+          </button>
+        </div>
+
+        <div className="table-container">
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ textAlign: "left", borderBottom: "2px solid #f1f5f9" }}>
+                <th style={{ padding: "12px" }}>Product</th>
+                <th style={{ padding: "12px" }}>Current Stock</th>
+                <th style={{ padding: "12px" }}>Suggested Supplier</th>
+                <th style={{ padding: "12px" }}>Supplier Contact</th>
+              </tr>
+            </thead>
+            <tbody>
+              {restockSuggestions.length === 0 ? (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center", padding: "24px", color: "#64748b" }}>Stock levels are sufficient. No recommendations at this time.</td>
+                </tr>
+              ) : (
+                restockSuggestions.map((s, i) => (
+                  <tr key={i} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                    <td style={{ padding: "12px", fontWeight: "600" }}>{s.name}</td>
+                    <td style={{ padding: "12px" }}>{s.qty} Units</td>
+                    <td style={{ padding: "12px" }}>{s.suggestedSupplier}</td>
+                    <td style={{ padding: "12px" }}>{s.contact}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

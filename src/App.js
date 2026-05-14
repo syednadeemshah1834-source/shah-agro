@@ -4,6 +4,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 import Footer from "./components/Footer";
+import NotificationSystem from "./components/NotificationSystem";
 
 import Login from "./Pages/Login";
 
@@ -90,6 +91,7 @@ const App = () => {
     <div className="app">
 
       <Sidebar />
+      <NotificationSystem />
 
       <div className="main-content">
 
